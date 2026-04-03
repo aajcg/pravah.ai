@@ -4,13 +4,12 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:003d1f,50:00cc6a,100:00ff88&height=200&section=header&text=PRAVAH.ai&fontSize=72&fontColor=ffffff&fontAlignY=38&desc=AI-powered%20Engineering%20Handoff%20Generator&descAlignY=58&descSize=18&animation=fadeIn" width="100%"/>
 
 <!-- Animated typing banner -->
-<a href="https://github.com">
-  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&duration=3000&pause=1000&color=00FF88&center=true&vCenter=true&multiline=false&repeat=true&width=600&height=60&lines=Slack+thread+%E2%86%92+Structured+Handoff;No+more+lost+context.+Ever.;Built+for+engineering+teams.;Tasks+%E2%80%A2+Owners+%E2%80%A2+Blockers+%E2%80%A2+Deadlines" alt="Typing SVG" />
+<a href="#">
+  <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=22&duration=3000&pause=1000&color=00FF88&center=true&vCenter=true&repeat=true&width=600&height=60&lines=Slack+thread+%E2%86%92+Structured+Handoff;No+more+lost+context.+Ever.;Built+for+engineering+teams.;Tasks+%E2%80%A2+Owners+%E2%80%A2+Blockers+%E2%80%A2+Deadlines" alt="Typing SVG" />
 </a>
 
 <br/>
 
-<!-- Tech Badges -->
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -20,7 +19,6 @@
 
 <br/>
 
-<!-- Status Badges -->
 ![Status](https://img.shields.io/badge/Status-Active-00cc6a?style=flat-square&logo=checkmarx&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 ![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=flat-square&logo=github)
@@ -36,14 +34,14 @@
 
 </div>
 
-> **PRAVAH** *(Sanskrit: प्रवाह — "flow")* — because critical engineering context should *flow*, not disappear in a Slack thread.
+> **PRAVAH** *(Sanskrit: प्रवाह — "flow")* — because critical engineering context should *flow*, not vanish in a Slack thread.
 
 Engineering teams **bleed time** searching through:
 - 🧵 Endless Slack threads
-- 📋 Unstructured standups
-- 💬 Long chat discussions
+- 📋 Unstructured standups  
+- 💬 Long chat discussions with buried decisions
 
-**PRAVAH.ai** plugs directly into your conversations and spits out a clean, structured JSON handoff — automatically.
+**PRAVAH.ai** plugs directly into those conversations and automatically produces a clean, structured JSON handoff — instantly.
 
 <div align="center">
 
@@ -62,13 +60,13 @@ Engineering teams **bleed time** searching through:
 <td width="50%">
 
 ### 🧠 LLM Extraction
-Uses **OpenRouter** to intelligently parse tasks, blockers, owners, and deadlines from raw unstructured chat. No regex, no guessing — actual language understanding.
+Uses **OpenRouter** to intelligently parse tasks, blockers, owners, and deadlines from raw unstructured chat. No regex hacks — actual language understanding.
 
 </td>
 <td width="50%">
 
 ### 🛡️ Rule-Based Fallback
-If the LLM fails or no API key is present, a deterministic rule-based parser takes over — **always returning schema-safe JSON**. No silent failures.
+If the LLM fails or no API key is present, a deterministic rule-based parser takes over — **always returning schema-safe JSON**. Zero silent failures.
 
 </td>
 </tr>
@@ -82,7 +80,7 @@ PRAVAH connects natively to Slack. Engineering conversations turn into structure
 <td width="50%">
 
 ### 🤖 Chat QA Agent
-Interrogate your handoff object conversationally via the `/chat` endpoint. Ask *"who owns the payment service retry?"* — get a direct answer.
+Interrogate your handoff object conversationally via the `/chat` endpoint. Ask *"who owns the payment retry?"* — get a direct answer.
 
 </td>
 </tr>
@@ -90,7 +88,7 @@ Interrogate your handoff object conversationally via the `/chat` endpoint. Ask *
 <td width="50%">
 
 ### ⚡ Machine-Ready JSON
-Output is always automation-ready. Pipe it to Jira, Linear, Notion, or your own tooling — structured handoffs become first-class data.
+Output is always automation-ready. Pipe it into Jira, Linear, Notion, or your own tooling — structured handoffs become first-class data.
 
 </td>
 <td width="50%">
@@ -104,98 +102,27 @@ Extraction logic is covered by unit tests using Node's native `node:test` runner
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Agent System Architecture
+
+> Animated data packets flow across every agent boundary in real-time. Place `architecture.svg` in the same folder as this README.
+
+<div align="center">
+<img src="./architecture.svg" alt="PRAVAH.ai Animated Agent Architecture" width="100%"/>
+</div>
+
+<br/>
+
+**Pipeline summary:**
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        PRAVAH.ai PIPELINE                           │
-└─────────────────────────────────────────────────────────────────────┘
-
-  💬 Slack / Chat                                      📊 Output
-  ┌───────────┐                                      ┌───────────────┐
-  │  Messages │                                      │ Handoff JSON  │
-  │           │                                      │               │
-  │ "Rahul is │                                      │ tasks: [...]  │
-  │  working  │                                      │ blockers:[...]│
-  │  on retry │                                      │ owners: [...] │
-  │  logic.." │                                      │ deadlines:[]  │
-  └─────┬─────┘                                      └───────┬───────┘
-        │ messages                                           │
-        ▼                                                    ▲
-  ┌───────────┐    request    ┌──────────────────────────────┴──────┐
-  │  Express  │──────────────▶│                                     │
-  │  API :3000│               │      🤖 PRAVAH Orchestrator         │
-  └───────────┘               │         Agent (core logic)          │
-                              │                                     │
-                              └────────┬──────────────┬────────────┘
-                                       │              │
-                          ┌────────────▼──┐      ┌────▼──────────────┐
-                          │  🧠 LLM Layer  │      │  🛡️ Rule Parser   │
-                          │  (OpenRouter)  │      │  (fallback)       │
-                          │               │      │                   │
-                          │  • GPT-style  │      │  • Regex-based    │
-                          │    reasoning  │      │  • Always-on      │
-                          │  • Context    │      │  • No API needed  │
-                          │    aware      │      │                   │
-                          └──────┬────────┘      └────────┬──────────┘
-                                 │                        │
-                                 └───────────┬────────────┘
-                                             │
-                                             ▼
-                              ┌──────────────────────────┐
-                              │  📦 Structuring Engine   │
-                              │                          │
-                              │  Merges, deduplicates,   │
-                              │  and validates schema    │
-                              └─────────────┬────────────┘
-                                            │
-                              ┌─────────────▼────────────┐
-                              │  💡 Chat QA Agent        │
-                              │  /chat endpoint          │
-                              │  Query your handoff!     │
-                              └──────────────────────────┘
-```
-
-### Flow Diagram
-
-```mermaid
-flowchart LR
-    A([💬 Slack / Chat]) -->|messages| B
-
-    subgraph API["🚀 Express Server :3000"]
-        B[Request Handler]
-    end
-
-    B -->|route| C
-
-    subgraph AGENT["🤖 PRAVAH Orchestrator"]
-        C{Route Logic}
-    end
-
-    C -->|primary| D
-    C -->|fallback| E
-
-    subgraph INTEL["🧠 Intelligence Layer"]
-        D[LLM Extraction\nOpenRouter]
-        E[Rule-Based Parser\nDeterministic]
-    end
-
-    D --> F
-    E --> F
-
-    subgraph OUTPUT["📦 Output Layer"]
-        F[Structuring Engine]
-        G[(Handoff JSON)]
-        H[💡 Chat QA Agent]
-    end
-
-    F --> G
-    G -->|/chat queries| H
-
-    style API fill:#0a2540,stroke:#4fc3f7,color:#4fc3f7
-    style AGENT fill:#1a1a35,stroke:#b39ddb,color:#b39ddb
-    style INTEL fill:#0e1419,stroke:#00ff88,color:#00ff88
-    style OUTPUT fill:#003d1f,stroke:#00cc6a,color:#00cc6a
+💬 Raw chat messages
+    └─▶ 🚀 Express API receives & routes request
+            └─▶ 🤖 PRAVAH Orchestrator (AI Agent Hub)
+                    ├─▶ 🧠 LLM Agent       (primary path)  ─▶ ┐
+                    └─▶ 🛡️ Rule Parser     (fallback path) ─▶ ┤
+                                                               └─▶ 📦 Structuring Engine
+                                                                           └─▶ 📊 Handoff JSON
+                                                                                     └─▶ 💡 /chat QA Agent
 ```
 
 ---
@@ -234,7 +161,7 @@ flowchart LR
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/health` | Health check — confirm the server is live |
-| `POST` | `/handoff/extract` | Core endpoint — submit messages, get handoff JSON |
+| `POST` | `/handoff/extract` | Submit messages, receive structured handoff JSON |
 | `POST` | `/chat` | Query your handoff object conversationally |
 
 <details>
@@ -264,7 +191,6 @@ curl -X POST http://localhost:3000/handoff/extract \
   "dependencies": ["DB migration"]
 }
 ```
-
 </details>
 
 <details>
@@ -275,7 +201,7 @@ curl -X POST http://localhost:3000/handoff/extract \
 curl -X POST http://localhost:3000/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "handoff": { ... },
+    "handoff": { "..." },
     "question": "Who owns the auth bug?"
   }'
 ```
@@ -284,60 +210,7 @@ curl -X POST http://localhost:3000/chat \
 ```json
 { "answer": "Priya owns the auth token bug fix." }
 ```
-
 </details>
-
----
-
-## 🚀 Quick Start
-
-**1. Clone & install**
-```bash
-git clone https://github.com/your-org/pravah-ai.git
-cd pravah-ai
-npm install
-```
-
-**2. Configure environment**
-```bash
-cp .env.example .env
-```
-
-```env
-OPENROUTER_API_KEY=your_key_here
-PORT=3000
-```
-
-**3. Start the server**
-```bash
-node src/server.js
-```
-
-**4. Run tests**
-```bash
-node --test
-```
-
----
-
-## 📂 Project Structure
-
-```
-PRAVAH.ai/
-│
-├── 📁 landing page/
-│   └── index.html              # Product landing page
-│
-├── 📁 src/
-│   ├── server.js               # Express API server
-│   └── extractHandoff.js       # Core extraction logic (LLM + fallback)
-│
-├── 📁 test/
-│   └── extractHandoff.test.js  # Unit tests (node:test)
-│
-├── .env.example                # Environment template
-└── README.md
-```
 
 ---
 
@@ -361,7 +234,59 @@ PRAVAH.ai/
           (always returned)
 ```
 
-PRAVAH.ai never crashes silently. The fallback parser guarantees output regardless of API availability, key errors, or LLM timeouts.
+PRAVAH never crashes silently. The fallback parser guarantees output regardless of API availability, key errors, or LLM timeouts.
+
+---
+
+## 🚀 Quick Start
+
+**1. Clone & install**
+```bash
+git clone https://github.com/your-org/pravah-ai.git
+cd pravah-ai
+npm install
+```
+
+**2. Configure environment**
+```bash
+cp .env.example .env
+```
+```env
+OPENROUTER_API_KEY=your_key_here
+PORT=3000
+```
+
+**3. Start the server**
+```bash
+node src/server.js
+```
+
+**4. Run tests**
+```bash
+node --test
+```
+
+---
+
+## 📂 Project Structure
+
+```
+PRAVAH.ai/
+│
+├── 📁 landing page/
+│   └── index.html
+│
+├── 📁 src/
+│   ├── server.js               # Express API server
+│   └── extractHandoff.js       # LLM + fallback extraction logic
+│
+├── 📁 test/
+│   └── extractHandoff.test.js  # Unit tests
+│
+├── architecture.svg            # 🔥 Animated agent architecture diagram
+├── .env.example
+└── README.md
+```
 
 ---
 
@@ -369,14 +294,8 @@ PRAVAH.ai never crashes silently. The fallback parser guarantees output regardle
 
 <table>
 <tr>
-  <td align="center">
-    <b>Lavansh Choubey</b><br/>
-    <sub>Co-creator</sub>
-  </td>
-  <td align="center">
-    <b>Aksh Garg</b><br/>
-    <sub>Co-creator</sub>
-  </td>
+  <td align="center"><b>Lavansh Choubey</b><br/><sub>Co-creator</sub></td>
+  <td align="center"><b>Aksh Garg</b><br/><sub>Co-creator</sub></td>
 </tr>
 </table>
 
@@ -384,7 +303,6 @@ PRAVAH.ai never crashes silently. The fallback parser guarantees output regardle
 
 <div align="center">
 
-<!-- Footer wave -->
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:00ff88,50:00cc6a,100:003d1f&height=120&section=footer&animation=fadeIn" width="100%"/>
 
 **If PRAVAH saves your team from lost context, leave a ⭐**
