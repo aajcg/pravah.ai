@@ -1,2 +1,0 @@
-# pravah.ai
-# pravah.ai
