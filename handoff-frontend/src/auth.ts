@@ -9,8 +9,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // We need more than just identity scopes to read messages
       authorization: {
         params: {
-          // Standard OIDC scopes for login, plus scopes for reading public channels
-          scope: "openid profile email channels:read channels:history"
+          scope: "openid profile email",
+          user_scope: "channels:read channels:history"
         }
       }
     })
