@@ -1,10 +1,15 @@
 import "dotenv/config";
 import express from "express";
 import axios from "axios";
+import cors from "cors";
 import { extractHandoff } from "./extractHandoff.js";
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || 4000;
+const CORS_ORIGINS = (process.env.CORS_ORIGIN ?? "http://localhost:3000")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const CHAT_FALLBACK_ANSWER = "Not specified in handoff";
 const HANDOFF_KEYS = [
@@ -16,6 +21,11 @@ const HANDOFF_KEYS = [
   "dependencies",
 ];
 
+app.use(
+  cors({
+    origin: CORS_ORIGINS,
+  })
+);
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
