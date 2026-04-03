@@ -163,6 +163,7 @@ Extraction logic is covered by unit tests using Node's native `node:test` runner
 | `GET` | `/health` | Health check — confirm the server is live |
 | `POST` | `/handoff/extract` | Submit messages, receive structured handoff JSON |
 | `POST` | `/chat` | Query your handoff object conversationally |
+| `POST` | `/handoff/share/slack` | Post structured handoff to Slack via incoming webhook |
 
 <details>
 <summary><b>📖 Example: POST /handoff/extract</b></summary>
@@ -254,6 +255,7 @@ cp .env.example .env
 ```env
 OPENROUTER_API_KEY=your_key_here
 PORT=3000
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/XXX/YYY/ZZZ
 ```
 
 **3. Start the server**

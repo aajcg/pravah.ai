@@ -2,7 +2,11 @@
 
 import { create } from "zustand";
 import { toast } from "sonner";
-import { chatAboutHandoff, extractHandoffRequest } from "@/lib/api";
+import {
+  chatAboutHandoff,
+  extractHandoffRequest,
+  shareHandoffToSlack,
+} from "@/lib/api";
 import { playUiClick } from "@/lib/sound";
 import { splitMessages } from "@/lib/utils";
 import { EMPTY_HANDOFF, type HandoffPayload } from "@/types/handoff";
@@ -47,18 +51,22 @@ interface HandoffStore {
   thinkingLogs: string[];
   chatMessages: ChatMessage[];
   isChatLoading: boolean;
+  isSendingSlack: boolean;
   showSystemFlow: boolean;
   soundEnabled: boolean;
   extractionError: string | null;
   chatError: string | null;
+  slackError: string | null;
   setMessagesInput: (value: string) => void;
   fillWithExample: () => void;
   runExtraction: () => Promise<void>;
   askQuestion: (question: string) => Promise<void>;
+  sendToSlack: () => Promise<void>;
   toggleSystemFlow: () => void;
   toggleSound: () => void;
   clearExtractionError: () => void;
   clearChatError: () => void;
+  clearSlackError: () => void;
 }
 
 const makeId = (): string =>
@@ -73,10 +81,12 @@ export const useHandoffStore = create<HandoffStore>((set, get) => ({
   thinkingLogs: [],
   chatMessages: [],
   isChatLoading: false,
+  isSendingSlack: false,
   showSystemFlow: false,
   soundEnabled: true,
   extractionError: null,
   chatError: null,
+  slackError: null,
 
   setMessagesInput: (value) => {
     set({ messagesInput: value });
@@ -107,6 +117,7 @@ export const useHandoffStore = create<HandoffStore>((set, get) => ({
       processingLabel: PROCESSING_STEPS[0],
       activeStage: 1,
       extractionError: null,
+      slackError: null,
       thinkingLogs: [THINKING_LOGS[0]],
     });
 
@@ -200,6 +211,37 @@ export const useHandoffStore = create<HandoffStore>((set, get) => ({
     }
   },
 
+  sendToSlack: async () => {
+    const { handoff, soundEnabled } = get();
+    const hasData = Object.values(handoff).some(
+      (items) => Array.isArray(items) && items.length > 0
+    );
+
+    if (!hasData) {
+      toast.error("No handoff data to send.");
+      return;
+    }
+
+    playUiClick(soundEnabled);
+    set({
+      isSendingSlack: true,
+      slackError: null,
+    });
+
+    try {
+      await shareHandoffToSlack(handoff);
+      set({ isSendingSlack: false });
+      toast.success("Handoff sent to Slack.");
+    } catch (error) {
+      console.error(error);
+      set({
+        isSendingSlack: false,
+        slackError: "Slack send failed. Check webhook config.",
+      });
+      toast.error("Slack send failed. Check webhook config.");
+    }
+  },
+
   toggleSystemFlow: () => {
     const soundEnabled = get().soundEnabled;
     playUiClick(soundEnabled);
@@ -220,5 +262,9 @@ export const useHandoffStore = create<HandoffStore>((set, get) => ({
 
   clearChatError: () => {
     set({ chatError: null });
+  },
+
+  clearSlackError: () => {
+    set({ slackError: null });
   },
 }));

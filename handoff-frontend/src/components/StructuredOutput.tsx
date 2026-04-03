@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { Copy, Database } from "lucide-react";
+import { Copy, Database, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/react/shallow";
 import { Button } from "@/components/ui/button";
@@ -27,10 +27,12 @@ const visibleKeys: HandoffKey[] = [
 ];
 
 export default function StructuredOutput() {
-  const { handoff, isExtracting } = useHandoffStore(
+  const { handoff, isExtracting, isSendingSlack, sendToSlack } = useHandoffStore(
     useShallow((state) => ({
       handoff: state.handoff,
       isExtracting: state.isExtracting,
+      isSendingSlack: state.isSendingSlack,
+      sendToSlack: state.sendToSlack,
     }))
   );
 
@@ -43,6 +45,10 @@ export default function StructuredOutput() {
     const payload = JSON.stringify(handoff, null, 2);
     await navigator.clipboard.writeText(payload);
     toast.success("Structured JSON copied.");
+  };
+
+  const handleSendToSlack = async () => {
+    await sendToSlack();
   };
 
   return (
@@ -60,10 +66,31 @@ export default function StructuredOutput() {
                 Visualized extraction result for handoff decisions.
               </CardDescription>
             </div>
-            <Button type="button" variant="ghost" size="sm" onClick={handleCopy}>
-              <Copy className="h-4 w-4" />
-              Copy JSON
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  void handleCopy();
+                }}
+                disabled={isExtracting || !hasData}
+              >
+                <Copy className="h-4 w-4" />
+                Copy JSON
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  void handleSendToSlack();
+                }}
+                disabled={isExtracting || !hasData || isSendingSlack}
+              >
+                <Send className="h-4 w-4" />
+                {isSendingSlack ? "Sending..." : "Send to Slack"}
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
