@@ -1,48 +1,86 @@
 # 🚀 PRAVAH.ai  
-Turn messy conversations into **structured engineering handoffs** automatically.
+### AI-powered Engineering Handoff Generator
 
-![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/API-Express-black?logo=express)
-![JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow?logo=javascript)
-![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-blue)
-![Slack](https://img.shields.io/badge/Input-Slack-4A154B?logo=slack)
-![Tests](https://img.shields.io/badge/Tests-node:test-green)
+<p align="center">
 
----
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-black?style=for-the-badge&logo=express)
+![JavaScript](https://img.shields.io/badge/JavaScript-yellow?style=for-the-badge&logo=javascript)
+![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-blue?style=for-the-badge)
+![Slack](https://img.shields.io/badge/Slack-Integration-4A154B?style=for-the-badge&logo=slack)
+![Tests](https://img.shields.io/badge/Tested-node:test-green?style=for-the-badge)
 
-## ✨ Overview
-
-**PRAVAH.ai** converts chat messages (Slack, discussions, or shift updates) into a **structured JSON handoff** that engineering teams can immediately act on.
-
-Instead of manually summarizing conversations, the system extracts:
-
-- Tasks
-- Owners
-- Blockers
-- Deadlines
-- Decisions
-- Dependencies
-
-This enables **clean shift handoffs, async collaboration, and automation-ready updates.**
+</p>
 
 ---
 
-## 🔗 Slack Integration
+# ✨ What is PRAVAH.ai?
 
-PRAVAH.ai integrates with **Slack** so team conversations can be directly used as input.
+Engineering teams lose critical context inside **Slack threads, standups, and long chat discussions**.
 
-Why this matters:
+**PRAVAH.ai** converts those conversations into a **structured engineering handoff JSON** automatically.
 
-- Engineering discussions already happen in Slack
-- No manual summarization required
-- Important context is never lost
-- Instant structured handoffs for the next shift or team
+Instead of scrolling through chats, teams instantly see:
+
+✔ Tasks  
+✔ Owners  
+✔ Blockers  
+✔ Deadlines  
+✔ Decisions  
+✔ Dependencies  
+
+This enables **clean shift handoffs, async collaboration, and automation-ready workflows.**
 
 ---
 
-## 📦 Example Output
+# 🎬 Demo
 
-Input messages:
+<p align="center">
+
+*(Add your demo GIF here)*
+
+</p>
+
+```
+/assets/demo.gif
+```
+
+Example flow:
+
+Slack conversation → PRAVAH.ai → Structured engineering handoff.
+
+---
+
+# 🧩 Key Features
+
+| Feature | Description |
+|------|------|
+| 🧠 **LLM Extraction** | Uses OpenRouter LLM to intelligently extract tasks, blockers, and owners |
+| 🛡 **Reliable Fallback** | Rule-based parser ensures extraction works even if LLM fails |
+| 💬 **Slack Integration** | Conversations from Slack can directly generate handoffs |
+| ⚡ **Instant Structure** | Converts unstructured chat into machine-readable JSON |
+| 🤖 **Ask Questions** | Query the handoff object with `/chat` endpoint |
+| 🧪 **Tested Logic** | Unit tests validate extraction reliability |
+
+---
+
+# 🔗 Slack Integration
+
+Most engineering communication already happens in **Slack**.
+
+PRAVAH.ai integrates with Slack so teams can:
+
+- capture discussions automatically  
+- avoid manual summarization  
+- generate structured handoffs instantly  
+
+This transforms **team communication into structured engineering intelligence.**
+
+---
+
+# 📦 Example Output
+
+Input:
 
 ```json
 [
@@ -52,7 +90,7 @@ Input messages:
 ]
 ```
 
-Generated handoff:
+Output:
 
 ```json
 {
@@ -67,63 +105,48 @@ Generated handoff:
 
 ---
 
-## 🏗 Architecture
+# 🏗 Architecture
 
+```mermaid
+flowchart TD
+
+A[Slack / Chat Messages] --> B[Express API Server]
+
+B --> C[Extraction Engine]
+
+C --> D[OpenRouter LLM]
+C --> E[Rule-based Fallback Parser]
+
+D --> F[Structured Handoff JSON]
+E --> F
+
+F --> G[/chat QA Engine]
 ```
-Slack / Client
-      │
-      ▼
- Express API Server
-      │
-      ▼
-Extraction Engine
- (LLM + fallback)
-      │
-      ▼
-Structured Handoff JSON
-      │
-      ▼
-Chat QA on Handoff
-```
-
-### Core Components
-
-**API Layer**
-`src/server.js`  
-Handles requests and exposes REST endpoints.
-
-**Extraction Engine**
-`src/extractHandoff.js`  
-Uses **OpenRouter LLM** with a **rule-based fallback** to always return structured JSON.
-
-**Test Layer**
-`test/extractHandoff.test.js`  
-Validates extraction behavior.
-
-**Landing Page**
-`landing page/index.html`
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
 ```
 PRAVAH.ai
 │
 ├── landing page/
 │   └── index.html
+│
 ├── src/
 │   ├── server.js
 │   └── extractHandoff.js
+│
 ├── test/
 │   └── extractHandoff.test.js
+│
 ├── .env.example
 └── README.md
 ```
 
 ---
 
-## ⚙️ API Endpoints
+# ⚙️ API Endpoints
 
 ### Health Check
 ```
@@ -142,7 +165,7 @@ POST /chat
 
 ---
 
-## 🛠 Local Development
+# 🛠 Local Setup
 
 Install dependencies
 
@@ -156,7 +179,7 @@ Create environment file
 cp .env.example .env
 ```
 
-Add key:
+Add key
 
 ```
 OPENROUTER_API_KEY=your_key_here
@@ -177,15 +200,19 @@ node --test
 
 ---
 
-## 🛡 Reliability Design
+# 🛡 Reliability Design
 
 PRAVAH.ai always returns **schema-safe JSON**.
 
-If LLM extraction fails or no API key exists, the system automatically switches to **local rule-based extraction**, ensuring reliable handoffs.
+If LLM extraction fails or no API key is present, the system automatically switches to a **rule-based fallback parser**, ensuring consistent output.
 
 ---
 
-## 👥 Contributors
+# 👥 Contributors
 
-- Lavansh Choubey  
-- Aksh Garg
+- **Lavansh Choubey**  
+- **Aksh Garg**
+
+---
+
+⭐ If you like this project, consider **starring the repo!**
