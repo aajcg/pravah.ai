@@ -503,3 +503,55 @@ footer{
   .stat{border-right:none;border-bottom:1px solid var(--border)}
   footer{flex-direction:column;gap:16px;text-align:center}
 }
+/* ── TICKER RIBBON ── */
+.ticker-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:32px;background:var(--gold);overflow:hidden;
+  display:flex;align-items:center;
+}
+.ticker-track{
+  display:flex;align-items:center;gap:0;
+  white-space:nowrap;
+  animation:tickerScroll 28s linear infinite;
+}
+@keyframes tickerScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.ticker-item{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink);font-weight:400;
+  padding:0 22px;display:inline-flex;align-items:center;gap:8px;
+}
+.ticker-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:11px;letter-spacing:.05em}
+.ticker-brand b{font-weight:800}
+.ticker-sep{
+  color:rgba(7,8,13,.35);font-size:14px;
+  flex-shrink:0;line-height:1;
+}
+.ticker-dot{
+  width:5px;height:5px;background:var(--ink);border-radius:50%;opacity:.5;
+  animation:dotPulse 2s ease-in-out infinite;
+  flex-shrink:0;
+}
+
+/* Offset nav and hero for ticker */
+nav{top:32px}
+.hero{padding-top:152px}
+
+/* ── AGENT ICON TEXT (replaces emoji) ── */
+.agent-icon-text{
+  width:44px;height:44px;border-radius:4px;
+  background:rgba(212,164,76,.1);border:1px solid rgba(212,164,76,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:15px;
+  color:var(--gold);margin-bottom:18px;letter-spacing:.05em;
+}
+
+/* Avatar text override */
+.hv-avatar{
+  font-family:'Syne',sans-serif;
+  font-weight:800;font-size:16px;
+  color:var(--gold);
+}

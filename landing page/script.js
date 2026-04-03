@@ -1,4 +1,3 @@
-
 /* ── CURSOR ── */
 const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
 let mx=0,my=0,rx=0,ry=0;
