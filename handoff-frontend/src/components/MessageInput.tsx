@@ -4,15 +4,6 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Wand2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { useHandoffStore } from "@/store/use-handoff-store";
 import { SlackConnect } from "@/components/SlackConnect";
 
@@ -44,116 +35,242 @@ export default function MessageInput() {
   );
 
   const [hintValue, setHintValue] = useState("");
-
-  const canShowTypingHint = useMemo(
-    () => messagesInput.trim().length === 0,
-    [messagesInput]
-  );
+  const canShowHint = useMemo(() => messagesInput.trim().length === 0, [messagesInput]);
 
   useEffect(() => {
-    if (!canShowTypingHint) {
-      return;
-    }
-
-    let hintIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-
-    const timer = window.setInterval(() => {
-      const activeHint = typingHints[hintIndex];
-
+    if (!canShowHint) return;
+    let hintIdx = 0, charIdx = 0, deleting = false;
+    const timer = setInterval(() => {
+      const hint = typingHints[hintIdx];
       if (!deleting) {
-        charIndex += 1;
-        setHintValue(activeHint.slice(0, charIndex));
-
-        if (charIndex >= activeHint.length) {
-          deleting = true;
-          return;
-        }
+        setHintValue(hint.slice(0, ++charIdx));
+        if (charIdx >= hint.length) deleting = true;
       } else {
-        charIndex -= 1;
-        setHintValue(activeHint.slice(0, Math.max(0, charIndex)));
-
-        if (charIndex <= 0) {
-          deleting = false;
-          hintIndex = (hintIndex + 1) % typingHints.length;
-        }
+        setHintValue(hint.slice(0, Math.max(0, --charIdx)));
+        if (charIdx <= 0) { deleting = false; hintIdx = (hintIdx + 1) % typingHints.length; }
       }
     }, 42);
+    return () => clearInterval(timer);
+  }, [canShowHint]);
 
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [canShowTypingHint]);
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     await runExtraction();
   };
 
   return (
     <motion.div
-      whileHover={{ y: -3, rotateX: 2, rotateY: -2 }}
-      transition={{ type: "spring", stiffness: 220, damping: 16 }}
-      style={{ transformStyle: "preserve-3d" }}
-      className="flex flex-col gap-4"
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 200, damping: 18 }}
+      style={{ height: "100%" }}
     >
-      <Card className="h-full">
-        <CardHeader>
-          <CardTitle>Raw Message Input</CardTitle>
-          <CardDescription>
-            Paste noisy team updates and let the system extract structure.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={onSubmit}>
-            <div className="relative">
-              <Textarea
+      <div style={{
+        border: "1px solid var(--border)",
+        background: "rgba(255,255,255,0.015)",
+        backdropFilter: "blur(4px)",
+        height: "100%",
+        position: "relative",
+        overflow: "hidden",
+        transition: "border-color 0.3s",
+      }}
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(212,164,76,0.3)")}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+      >
+        {/* Top accent */}
+        <div style={{
+          position: "absolute", top: 0, left: 0, right: 0, height: 1,
+          background: "linear-gradient(90deg, transparent, rgba(212,164,76,0.4), transparent)",
+        }} />
+
+        <div style={{ padding: "28px 24px" }}>
+          {/* Header */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: 10,
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "var(--gold)",
+              marginBottom: 8,
+            }}>
+              Agent 01 / Input
+            </div>
+            <h3 style={{
+              fontFamily: "var(--font-syne), sans-serif",
+              fontWeight: 700,
+              fontSize: 20,
+              color: "var(--paper)",
+              marginBottom: 4,
+              letterSpacing: "-0.3px",
+            }}>
+              Raw Message Input
+            </h3>
+            <p style={{
+              fontFamily: "var(--font-epilogue), sans-serif",
+              fontSize: 13,
+              color: "var(--paper3)",
+              lineHeight: 1.6,
+            }}>
+              Paste noisy team updates and let the system extract structure.
+            </p>
+          </div>
+
+          <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div style={{ position: "relative" }}>
+              <textarea
                 value={messagesInput}
-                onChange={(event) => setMessagesInput(event.target.value)}
+                onChange={(e) => setMessagesInput(e.target.value)}
                 placeholder="Drop chat snippets, standup notes, or email fragments..."
-                className="min-h-[220px]"
+                disabled={isExtracting}
+                style={{
+                  width: "100%",
+                  minHeight: 200,
+                  resize: "vertical",
+                  background: "rgba(255,255,255,0.025)",
+                  border: "1px solid var(--border)",
+                  color: "var(--paper)",
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: 12,
+                  lineHeight: 1.7,
+                  letterSpacing: "0.03em",
+                  padding: "14px 16px",
+                  outline: "none",
+                  borderRadius: 0,
+                  transition: "border-color 0.2s",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "rgba(212,164,76,0.4)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
               />
 
-              {canShowTypingHint && (
-                <div className="pointer-events-none absolute inset-x-4 bottom-4 rounded-lg border border-cyan-300/20 bg-slate-950/60 px-3 py-2 text-xs text-cyan-200">
-                  <span className="font-medium">Typing preview:</span> {hintValue}
+              {canShowHint && (
+                <div style={{
+                  position: "absolute",
+                  insetInline: 12,
+                  bottom: 12,
+                  background: "rgba(7,8,13,0.85)",
+                  border: "1px solid rgba(212,164,76,0.2)",
+                  padding: "6px 12px",
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: 11,
+                  color: "var(--gold2)",
+                  letterSpacing: "0.04em",
+                  pointerEvents: "none",
+                  borderRadius: 2,
+                }}>
+                  <span style={{ opacity: 0.6 }}>preview:</span> {hintValue}
                   <span className="typing-cursor">|</span>
                 </div>
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+              <button
                 type="button"
-                variant="ghost"
                 onClick={fillWithExample}
                 disabled={isExtracting}
+                style={{
+                  fontFamily: "var(--font-syne), sans-serif",
+                  fontWeight: 600,
+                  fontSize: 11,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--paper3)",
+                  padding: "10px 18px",
+                  border: "1px solid var(--border)",
+                  background: "transparent",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  borderRadius: 2,
+                  transition: "color 0.2s, border-color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--paper)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border2)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--paper3)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
+                }}
               >
-                <Wand2 className="h-4 w-4" />
+                <Wand2 size={12} />
                 Autofill Example
-              </Button>
-              <Button type="submit" disabled={isExtracting}>
-                <Sparkles className="h-4 w-4" />
-                {isExtracting ? "Processing" : "Extract Intelligence"}
-              </Button>
+              </button>
+
+              <button
+                type="submit"
+                disabled={isExtracting}
+                style={{
+                  fontFamily: "var(--font-syne), sans-serif",
+                  fontWeight: 700,
+                  fontSize: 11,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--ink)",
+                  padding: "10px 22px",
+                  border: "none",
+                  background: isExtracting ? "rgba(212,164,76,0.5)" : "var(--gold)",
+                  cursor: isExtracting ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  borderRadius: 2,
+                  transition: "background 0.2s, transform 0.15s",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isExtracting) (e.currentTarget as HTMLButtonElement).style.background = "var(--gold2)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isExtracting) (e.currentTarget as HTMLButtonElement).style.background = "var(--gold)";
+                }}
+              >
+                <Sparkles size={12} />
+                {isExtracting ? "Processing..." : "Extract Intelligence"}
+              </button>
             </div>
 
             {isExtracting && (
-              <div className="rounded-xl border border-white/15 bg-white/5 p-3 text-sm text-cyan-100 shimmer">
+              <div
+                className="shimmer"
+                style={{
+                  padding: "10px 14px",
+                  border: "1px solid rgba(212,164,76,0.2)",
+                  background: "rgba(212,164,76,0.04)",
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: 11,
+                  letterSpacing: "0.08em",
+                  color: "var(--gold2)",
+                }}
+              >
                 {processingLabel}
               </div>
             )}
           </form>
 
           {slackEnabled && (
-            <div className="mt-4 border-t border-slate-800 pt-4">
-              <h4 className="mb-2 text-sm font-medium text-slate-300">Or import directly:</h4>
+            <div style={{
+              marginTop: 20,
+              paddingTop: 20,
+              borderTop: "1px solid var(--border)",
+            }}>
+              <div style={{
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontSize: 10,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "var(--paper3)",
+                marginBottom: 10,
+              }}>
+                Or import directly:
+              </div>
               <SlackConnect />
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

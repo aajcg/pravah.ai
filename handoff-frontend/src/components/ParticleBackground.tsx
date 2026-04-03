@@ -18,28 +18,24 @@ export default function ParticleBackground() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
-    }
+    if (!canvas) return;
 
-    const context = canvas.getContext("2d");
-    if (!context) {
-      return;
-    }
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     let frameId = 0;
     const particles: Particle[] = [];
 
-    const initializeParticles = () => {
+    const init = () => {
       particles.length = 0;
-      for (let i = 0; i < PARTICLE_COUNT; i += 1) {
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
-          radius: Math.random() * 2.2 + 0.8,
-          alpha: Math.random() * 0.6 + 0.2,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          radius: Math.random() * 1.8 + 0.6,
+          alpha: Math.random() * 0.45 + 0.1,
         });
       }
     };
@@ -47,65 +43,102 @@ export default function ParticleBackground() {
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      initializeParticles();
+      init();
     };
 
-    const draw = () => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+    // Also draw the river-flow canvas lines matching script.js
+    const lines: {
+      y: number;
+      phase: number;
+      speed: number;
+      amp: number;
+      freq: number;
+      alpha: number;
+      color: string;
+    }[] = [];
 
-      const gradient = context.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, "rgba(18, 25, 48, 0.45)");
-      gradient.addColorStop(1, "rgba(3, 9, 24, 0.75)");
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, canvas.width, canvas.height);
+    const initLines = () => {
+      lines.length = 0;
+      for (let i = 0; i < 6; i++) {
+        lines.push({
+          y: canvas.height * (0.1 + i * 0.16),
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.0008 + Math.random() * 0.0005,
+          amp: 30 + Math.random() * 50,
+          freq: 0.003 + Math.random() * 0.002,
+          alpha: 0.05 + Math.random() * 0.08,
+          color: i % 2 === 0 ? "212,164,76" : "42,157,143",
+        });
+      }
+    };
 
-      for (const particle of particles) {
-        particle.x += particle.vx;
-        particle.y += particle.vy;
+    let t0: number | null = null;
 
-        if (particle.x < 0 || particle.x > canvas.width) {
-          particle.vx *= -1;
+    const draw = (ts: number) => {
+      if (!t0) t0 = ts;
+      const t = (ts - t0) * 0.001;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // River lines
+      lines.forEach((l) => {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(${l.color},${l.alpha})`;
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= canvas.width; x += 4) {
+          const y = l.y + Math.sin(x * l.freq + t * l.speed * 1000 + l.phase) * l.amp;
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
-        if (particle.y < 0 || particle.y > canvas.height) {
-          particle.vy *= -1;
-        }
+        ctx.stroke();
+      });
 
-        context.beginPath();
-        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-        context.fillStyle = `rgba(125, 211, 252, ${particle.alpha})`;
-        context.fill();
+      // Particles
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(212,164,76,${p.alpha})`;
+        ctx.fill();
       }
 
-      for (let i = 0; i < particles.length; i += 1) {
+      // Connection lines between particles
+      for (let i = 0; i < particles.length; i++) {
         const a = particles[i];
-        for (let j = i + 1; j < particles.length; j += 1) {
+        for (let j = i + 1; j < particles.length; j++) {
           const b = particles[j];
           const dx = a.x - b.x;
           const dy = a.y - b.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 120) {
-            const opacity = (1 - distance / 120) * 0.22;
-            context.strokeStyle = `rgba(125, 211, 252, ${opacity})`;
-            context.lineWidth = 1;
-            context.beginPath();
-            context.moveTo(a.x, a.y);
-            context.lineTo(b.x, b.y);
-            context.stroke();
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 130) {
+            const opacity = (1 - dist / 130) * 0.15;
+            ctx.strokeStyle = `rgba(212,164,76,${opacity})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
           }
         }
       }
 
-      frameId = window.requestAnimationFrame(draw);
+      frameId = requestAnimationFrame(draw);
     };
 
     resize();
-    draw();
+    initLines();
+    frameId = requestAnimationFrame(draw);
 
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", () => {
+      resize();
+      initLines();
+    });
 
     return () => {
-      window.cancelAnimationFrame(frameId);
+      cancelAnimationFrame(frameId);
       window.removeEventListener("resize", resize);
     };
   }, []);
@@ -114,7 +147,13 @@ export default function ParticleBackground() {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-20 opacity-80"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: "none",
+        opacity: 0.7,
+      }}
     />
   );
 }

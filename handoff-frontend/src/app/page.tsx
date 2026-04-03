@@ -4,11 +4,28 @@ import Pipeline from "@/components/Pipeline";
 
 export default function Home() {
   return (
-    <div className="relative overflow-x-clip bg-slate-950 text-slate-100">
-      <div className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.12),transparent_45%),radial-gradient(circle_at_85%_15%,rgba(139,92,246,0.15),transparent_42%),radial-gradient(circle_at_70%_80%,rgba(56,189,248,0.12),transparent_40%)]" />
+    <div className="relative overflow-x-clip" style={{ background: "var(--ink)" }}>
+      {/* Radial glow orbs — match landing page orb aesthetic */}
+      <div
+        aria-hidden
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          background:
+            "radial-gradient(circle at 80% 50%, rgba(26,77,110,0.2), transparent 45%), " +
+            "radial-gradient(circle at 10% 90%, rgba(42,157,143,0.1), transparent 42%), " +
+            "radial-gradient(circle at 45% 12%, rgba(212,164,76,0.06), transparent 40%)",
+        }}
+      />
 
       <ParticleBackground />
       <Hero />
+
+      {/* Divider */}
+      <div className="div-line" />
+
       <Pipeline />
     </div>
   );

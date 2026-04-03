@@ -1,94 +1,115 @@
 "use client";
 
-import { useMemo, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, OrbitControls } from "@react-three/drei";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import * as THREE from "three";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { playUiClick } from "@/lib/sound";
 import { useHandoffStore } from "@/store/use-handoff-store";
 
-function MessagePacket() {
-  const meshRef = useRef<THREE.Mesh>(null);
+// Simple floating nodes — kept but restyled with gold/teal palette
+function FloatingNodes() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const points = useMemo(
-    () => [
-      new THREE.Vector3(-2.8, -0.7, 0.3),
-      new THREE.Vector3(-1.2, 1.1, -0.1),
-      new THREE.Vector3(0.5, -0.3, 0.2),
-      new THREE.Vector3(1.9, 0.9, -0.2),
-      new THREE.Vector3(3.1, -0.5, 0.1),
-    ],
-    []
-  );
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  useFrame(({ clock }) => {
-    if (!meshRef.current) {
-      return;
-    }
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
 
-    const t = (clock.elapsedTime * 0.24) % 1;
-    const scaled = t * (points.length - 1);
-    const currentIndex = Math.floor(scaled);
-    const nextIndex = Math.min(currentIndex + 1, points.length - 1);
-    const local = scaled - currentIndex;
+    const nodes = Array.from({ length: 6 }, (_, i) => ({
+      x: (canvas.width * (i + 0.8)) / 7,
+      y: canvas.height * (0.3 + (i % 3) * 0.22),
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: 5 + (i % 2) * 3,
+      color: i % 2 === 0 ? "212,164,76" : "42,157,143",
+    }));
 
-    meshRef.current.position.lerpVectors(
-      points[currentIndex],
-      points[nextIndex],
-      local
-    );
-  });
+    // Travelling packet
+    let packetT = 0;
+
+    let frameId = 0;
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Lines between nodes
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const a = nodes[i], b = nodes[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 200) {
+            const op = (1 - dist / 200) * 0.3;
+            ctx.strokeStyle = `rgba(212,164,76,${op})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Nodes
+      nodes.forEach((n) => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 10 || n.x > canvas.width - 10) n.vx *= -1;
+        if (n.y < 10 || n.y > canvas.height - 10) n.vy *= -1;
+
+        // Glow
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r * 4);
+        grad.addColorStop(0, `rgba(${n.color},0.3)`);
+        grad.addColorStop(1, `rgba(${n.color},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r * 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.fillStyle = `rgba(${n.color},0.9)`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Travelling packet along path
+      packetT = (packetT + 0.004) % 1;
+      const idx = Math.floor(packetT * (nodes.length - 1));
+      const local = (packetT * (nodes.length - 1)) - idx;
+      const pA = nodes[Math.min(idx, nodes.length - 1)];
+      const pB = nodes[Math.min(idx + 1, nodes.length - 1)];
+      const px = pA.x + (pB.x - pA.x) * local;
+      const py = pA.y + (pB.y - pA.y) * local;
+
+      // Packet glow
+      const pg = ctx.createRadialGradient(px, py, 0, px, py, 12);
+      pg.addColorStop(0, "rgba(212,164,76,0.5)");
+      pg.addColorStop(1, "rgba(212,164,76,0)");
+      ctx.fillStyle = pg;
+      ctx.beginPath();
+      ctx.arc(px, py, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#d4a44c";
+      ctx.beginPath();
+      ctx.arc(px, py, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      frameId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => cancelAnimationFrame(frameId);
+  }, []);
 
   return (
-    <mesh ref={meshRef}>
-      <sphereGeometry args={[0.09, 20, 20]} />
-      <meshStandardMaterial
-        color="#67e8f9"
-        emissive="#22d3ee"
-        emissiveIntensity={1.8}
-      />
-    </mesh>
-  );
-}
-
-function FloatingNodesScene() {
-  const nodes = [
-    [-3.2, -0.8, -0.2],
-    [-2.2, 0.8, 0.3],
-    [-0.8, -0.3, -0.1],
-    [0.9, 1.1, 0],
-    [2.3, -0.4, 0.2],
-    [3.4, 0.6, -0.3],
-  ] as const;
-
-  return (
-    <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
-      <color attach="background" args={["#070d1d"]} />
-      <ambientLight intensity={0.45} />
-      <pointLight position={[4, 3, 2]} intensity={10} color="#22d3ee" />
-      <pointLight position={[-4, -2, 1]} intensity={7} color="#8b5cf6" />
-
-      {nodes.map((position, index) => (
-        <Float key={position.join("-")} speed={1.2 + index * 0.08} floatIntensity={0.8}>
-          <mesh position={position}>
-            <sphereGeometry args={[0.18 + (index % 2) * 0.05, 32, 32]} />
-            <meshStandardMaterial
-              color={index % 2 === 0 ? "#7dd3fc" : "#a78bfa"}
-              emissive={index % 2 === 0 ? "#06b6d4" : "#6d28d9"}
-              emissiveIntensity={0.95}
-              metalness={0.2}
-              roughness={0.2}
-            />
-          </mesh>
-        </Float>
-      ))}
-
-      <MessagePacket />
-      <OrbitControls enablePan={false} enableZoom={false} autoRotate autoRotateSpeed={0.4} />
-    </Canvas>
+    <canvas
+      ref={canvasRef}
+      style={{ width: "100%", height: "100%", display: "block" }}
+    />
   );
 }
 
@@ -97,63 +118,355 @@ export default function Hero() {
 
   const onTryDemo = () => {
     playUiClick(soundEnabled);
-    const section = document.getElementById("pipeline");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("pipeline")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Counter animation
+  useEffect(() => {
+    const counters = document.querySelectorAll<HTMLElement>("[data-count]");
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting || (e.target as HTMLElement).dataset.done) return;
+          (e.target as HTMLElement).dataset.done = "1";
+          const target = parseInt((e.target as HTMLElement).dataset.count || "0");
+          let c = 0;
+          const inc = target / 45;
+          const tm = setInterval(() => {
+            c = Math.min(c + inc, target);
+            (e.target as HTMLElement).textContent = Math.round(c).toLocaleString("en-IN");
+            if (c >= target) clearInterval(tm);
+          }, 25);
+        });
+      },
+      { threshold: 0.5 }
+    );
+    counters.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <section className="relative flex min-h-screen w-full items-center px-6 pb-20 pt-24 lg:px-12">
-      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[1.1fr_1fr]">
+    <section
+      id="hero"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "152px 64px 80px",
+        position: "relative",
+        overflow: "hidden",
+        zIndex: 1,
+      }}
+    >
+      {/* Orbs */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        <div style={{
+          position: "absolute", borderRadius: "50%", filter: "blur(80px)",
+          width: 600, height: 600, right: -100, top: "50%", transform: "translateY(-50%)",
+          background: "rgba(26,77,110,0.2)",
+        }} />
+        <div style={{
+          position: "absolute", borderRadius: "50%", filter: "blur(80px)",
+          width: 400, height: 400, left: -80, bottom: -100,
+          background: "rgba(42,157,143,0.1)",
+        }} />
+        <div style={{
+          position: "absolute", borderRadius: "50%", filter: "blur(80px)",
+          width: 300, height: 300, left: "40%", top: "10%",
+          background: "rgba(212,164,76,0.06)",
+        }} />
+      </div>
+
+      <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", width: "100%" }}>
+        {/* Tag */}
         <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          style={{
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: 11,
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "var(--gold)",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 28,
+          }}
+        >
+          <span style={{
+            width: 6, height: 6, background: "var(--gold)", borderRadius: "50%",
+            animation: "dotPulse 2s ease-in-out infinite",
+          }} />
+          AI Handoff Intelligence
+        </motion.div>
+
+        {/* Heading */}
+        <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10"
+          transition={{ duration: 0.9, delay: 0.35 }}
+          style={{
+            fontFamily: "var(--font-syne), sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(48px, 7vw, 96px)",
+            lineHeight: 0.96,
+            letterSpacing: "-3px",
+            maxWidth: 860,
+            margin: 0,
+            color: "var(--paper)",
+          }}
         >
-          <Badge className="mb-5" variant="neutral">
-            Handoff Intelligence System
-          </Badge>
-          <h1 className="text-balance text-5xl font-semibold leading-tight tracking-tight text-white md:text-7xl">
-            Turn Chaos into Clarity
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-slate-200/85 md:text-xl">
-            AI-powered team handoff intelligence that extracts blockers, ownership,
-            and deadlines from messy updates in real time.
-          </p>
+          <span style={{ display: "block" }}>Turn Chaos</span>
+          <span style={{
+            display: "block",
+            color: "var(--gold)",
+            position: "relative",
+          }}>
+            Into Clarity.
+            <span style={{
+              position: "absolute", left: 0, right: 0, bottom: -2, height: 2,
+              background: "linear-gradient(90deg, var(--gold), transparent)",
+            }} />
+          </span>
+        </motion.h1>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Button size="lg" onClick={onTryDemo}>
-              Try Live Demo
-            </Button>
-            <div className="rounded-xl border border-cyan-300/20 bg-cyan-400/5 px-4 py-2 text-sm text-cyan-100">
-              Live pipeline simulation enabled
+        {/* Subheading */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          style={{
+            marginTop: 36,
+            maxWidth: 520,
+            fontSize: 17,
+            lineHeight: 1.8,
+            color: "var(--paper2)",
+            fontWeight: 300,
+            fontFamily: "var(--font-epilogue), sans-serif",
+          }}
+        >
+          <em style={{ color: "var(--gold2)", fontStyle: "italic" }}>Pravah</em> means flow in Sanskrit. AI-powered handoff intelligence that extracts blockers, ownership, and urgency from messy updates — in real time.
+        </motion.p>
+
+        {/* Stat bar */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            marginTop: 60,
+            border: "1px solid var(--border)",
+            background: "rgba(255,255,255,0.02)",
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          {[
+            { num: "2800", prefix: "₹", suffix: "Cr+", label: "Lost to poor handoffs / year" },
+            { num: "60", suffix: " min", label: "Context reconstruction time" },
+            { num: null, label: "Tools solving this today", zero: true },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "22px 40px",
+                borderRight: i < 2 ? "1px solid var(--border)" : "none",
+                flex: "1 1 auto",
+              }}
+            >
+              <span style={{
+                fontFamily: "var(--font-syne), sans-serif",
+                fontWeight: 800,
+                fontSize: 34,
+                color: "var(--gold)",
+                display: "block",
+                lineHeight: 1,
+                marginBottom: 5,
+              }}>
+                {stat.prefix}
+                {stat.zero ? "Zero" : (
+                  <span data-count={stat.num}>0</span>
+                )}
+                {stat.suffix}
+              </span>
+              <span style={{
+                fontFamily: "var(--font-jetbrains-mono), monospace",
+                fontSize: 11,
+                color: "var(--paper3)",
+                letterSpacing: "0.05em",
+                textTransform: "uppercase",
+              }}>
+                {stat.label}
+              </span>
             </div>
-          </div>
+          ))}
         </motion.div>
 
+        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.1 }}
-          className="relative h-[370px] overflow-hidden rounded-3xl border border-white/15 bg-slate-950/55 backdrop-blur-xl md:h-[460px]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+          style={{ display: "flex", gap: 14, alignItems: "center", marginTop: 52, flexWrap: "wrap" }}
         >
-          <FloatingNodesScene />
-          <motion.div
-            className="absolute -left-4 top-6 rounded-xl border border-cyan-300/30 bg-slate-900/70 px-3 py-2 text-xs text-cyan-100"
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4.2, repeat: Number.POSITIVE_INFINITY }}
+          <button
+            onClick={onTryDemo}
+            style={{
+              fontFamily: "var(--font-syne), sans-serif",
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              background: "var(--gold)",
+              color: "var(--ink)",
+              padding: "16px 36px",
+              borderRadius: 3,
+              border: "none",
+              cursor: "pointer",
+              transition: "background 0.2s, transform 0.15s",
+              position: "relative",
+              overflow: "hidden",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--gold2)";
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--gold)";
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)";
+            }}
           >
-            Incoming Team Signals
-          </motion.div>
-          <motion.div
-            className="absolute bottom-7 right-5 rounded-xl border border-violet-300/30 bg-slate-900/70 px-3 py-2 text-xs text-violet-100"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 3.8, repeat: Number.POSITIVE_INFINITY }}
+            Try Live Demo
+          </button>
+
+          <a
+            href="#pipeline"
+            style={{
+              fontFamily: "var(--font-syne), sans-serif",
+              fontWeight: 600,
+              fontSize: 13,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              color: "var(--paper)",
+              padding: "16px 30px",
+              borderRadius: 3,
+              textDecoration: "none",
+              border: "1px solid var(--border2)",
+              transition: "border-color 0.2s, background 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,255,255,0.35)";
+              (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.04)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLAnchorElement).style.borderColor = "var(--border2)";
+              (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+            }}
           >
-            Structured Insight Stream
-          </motion.div>
+            See How It Works
+          </a>
         </motion.div>
       </div>
+
+      {/* Right visual panel */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.9, delay: 0.4 }}
+        style={{
+          position: "absolute",
+          right: 64,
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "min(420px, 35vw)",
+          height: 340,
+          border: "1px solid var(--border)",
+          background: "rgba(255,255,255,0.02)",
+          backdropFilter: "blur(4px)",
+          overflow: "hidden",
+          zIndex: 2,
+        }}
+      >
+        <FloatingNodes />
+        <motion.div
+          style={{
+            position: "absolute", top: 16, left: 16,
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: 10, letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            background: "rgba(7,8,13,0.8)",
+            border: "1px solid rgba(212,164,76,0.25)",
+            color: "var(--gold)",
+            padding: "6px 12px",
+            borderRadius: 2,
+          }}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 4.2, repeat: Infinity }}
+        >
+          Incoming Signals
+        </motion.div>
+        <motion.div
+          style={{
+            position: "absolute", bottom: 16, right: 16,
+            fontFamily: "var(--font-jetbrains-mono), monospace",
+            fontSize: 10, letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            background: "rgba(7,8,13,0.8)",
+            border: "1px solid rgba(42,157,143,0.3)",
+            color: "var(--teal2)",
+            padding: "6px 12px",
+            borderRadius: 2,
+          }}
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 3.8, repeat: Infinity }}
+        >
+          Structured Output
+        </motion.div>
+      </motion.div>
+
+      {/* Scroll cue */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 1.5 }}
+        style={{
+          position: "absolute",
+          bottom: 40,
+          left: 64,
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          fontFamily: "var(--font-jetbrains-mono), monospace",
+          fontSize: 10,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: "var(--paper3)",
+        }}
+      >
+        <div style={{ width: 1, height: 44, background: "var(--border)", position: "relative", overflow: "hidden" }}>
+          <div style={{
+            position: "absolute", top: "-100%", left: 0, width: "100%", height: "50%",
+            background: "linear-gradient(to bottom, transparent, var(--gold), transparent)",
+            animation: "scrollDrop 2.2s ease-in-out infinite",
+          }} />
+        </div>
+        Scroll to explore
+      </motion.div>
+
+      <style>{`
+        @keyframes scrollDrop {
+          0% { top: -100%; }
+          100% { top: 200%; }
+        }
+        @media (max-width: 900px) {
+          #hero { padding: 120px 20px 80px !important; }
+          #hero > div:nth-child(3) { display: none !important; }
+        }
+      `}</style>
     </section>
   );
 }
