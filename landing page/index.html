@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pravah.ai — Let Work Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="grain"></div>
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- TICKER RIBBON -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="ticker-dot"></span>MSA Resonate 2026</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">Team Thinkode</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item ticker-brand">Pravah<b>.ai</b></span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">AI Handoff Intelligence</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>MSA Resonate 2026</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">Team Thinkode</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item ticker-brand">Pravah<b>.ai</b></span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">AI Handoff Intelligence</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>MSA Resonate 2026</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">Team Thinkode</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item ticker-brand">Pravah<b>.ai</b></span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">AI Handoff Intelligence</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item"><span class="ticker-dot"></span>MSA Resonate 2026</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">Team Thinkode</span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item ticker-brand">Pravah<b>.ai</b></span>
+    <span class="ticker-sep">/</span>
+    <span class="ticker-item">AI Handoff Intelligence</span>
+    <span class="ticker-sep">/</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Pravah<b>.ai</b></a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#usecases">Use cases</a></li>
+    <li><a href="#roi">ROI</a></li>
+  </ul>
+  <a href="https://pravah-demo.vercel.app" target="_blank" class="nav-btn">View Demo</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="p-field" id="pfield"></div>
+
+  <div class="hero-tag">
+    <div class="hero-tag-dot"></div>
+    <span id="tagline">AI Handoff Intelligence</span>
+  </div>
+
+  <h1>
+    <span class="line"><span class="word" style="animation-delay:.4s">Knowledge</span> <span class="word" style="animation-delay:.5s">travels.</span></span>
+    <span class="line"><span class="word accent" style="animation-delay:.6s">Context</span></span>
+    <span class="line"><span class="word" style="animation-delay:.7s">never</span> <span class="word" style="animation-delay:.8s">dies.</span></span>
+  </h1>
+
+  <p class="hero-sub">
+    <em>Pravah</em> means flow in Sanskrit. We built the AI intelligence layer that ensures knowledge, decisions, and urgency travel with the work — across every handoff, shift change, and transition.
+  </p>
+
+  <div class="stat-bar">
+    <div class="stat">
+      <span class="s-num">&#8377;<span data-c="2800">0</span>Cr+</span>
+      <span class="s-lbl">Lost to poor handoffs / year</span>
+    </div>
+    <div class="stat">
+      <span class="s-num"><span data-c="60">0</span> min</span>
+      <span class="s-lbl">Context reconstruction time</span>
+    </div>
+    <div class="stat">
+      <span class="s-num"><span data-c="0" data-zero="true">0</span></span>
+      <span class="s-lbl">Tools solving this today</span>
+    </div>
+  </div>
+
+  <div class="cta-row">
+    <a href="https://pravah-demo.vercel.app" target="_blank" class="btn-fill">View Live Demo</a>
+    <a href="#how" class="btn-outline">See How It Works</a>
+  </div>
+
+  <div class="scroll-cue">
+    <div class="scroll-track"><div class="scroll-thumb"></div></div>
+    Scroll to explore
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- PROBLEM -->
+<section class="sec" id="problem">
+  <div class="problem-grid">
+    <div class="rv">
+      <div class="sec-tag">The Invisible Tax</div>
+      <h2>Every handoff is a<br>memory wipe.</h2>
+      <p class="body-copy">
+        Your tools capture work. They store messages, tickets, and documents. But when anurag ends his shift and lohit takes over, none of those tools hand lohit what he actually needs — <em style="color:var(--gold2)">a clear picture of what's happening right now, what's urgent, and what decisions led here.</em>
+      </p>
+      <p class="body-copy" style="margin-top:14px">
+        So lohit reconstructs. He reads back through threads, asks questions that were already answered, and makes judgment calls without full context. Every time. Every handoff. Across your entire team.
+      </p>
+    </div>
+    <div class="rv d1">
+      <div class="hv-track">
+        <div class="hv-person">
+          <div class="hv-avatar">A</div>
+          <div class="hv-info">
+            <div class="hv-role">anurag — Support Lead</div>
+            <div class="hv-status">Has full context · knows what matters · understands the customer</div>
+          </div>
+          <div class="hv-badge badge-green">Shift ends</div>
+        </div>
+
+        <div class="gap-zone">
+          <div class="gap-title">The Handoff Gap</div>
+          <div class="gap-sub">30–60 minutes lost. Every time.</div>
+          <div class="gap-items">
+            <div class="gap-pill">Decisions evaporate</div>
+            <div class="gap-pill">Urgency resets</div>
+            <div class="gap-pill">Context dies</div>
+          </div>
+        </div>
+
+        <div class="hv-person">
+          <div class="hv-avatar">L</div>
+          <div class="hv-info">
+            <div class="hv-role">lohit — Next Agent</div>
+            <div class="hv-status">Reads back threads · asks redundant questions · starts blind</div>
+          </div>
+          <div class="hv-badge badge-red">Starts blind</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- HOW IT WORKS -->
+<section class="sec how" id="how">
+  <div class="how-head rv">
+    <div class="sec-tag">How Pravah Works</div>
+    <h2>Three agents.<br>Zero lost context.</h2>
+  </div>
+
+  <div class="agents">
+    <div class="agent rv">
+      <div class="agent-n">Agent 01 / Shadow</div>
+      <div class="agent-icon-text">01</div>
+      <div class="agent-name">The Shadow</div>
+      <div class="agent-role">Capture Agent</div>
+      <p class="agent-desc">Sits passively on Slack, Jira, and email via OAuth. Builds a live work-state graph — what's in progress, what's blocked, what decisions were made and why. Always watching. Never interrupting.</p>
+    </div>
+
+    <div class="agent-conn rv d1">
+      <div class="conn-wrap">
+        <div class="conn-dot"></div>
+        <div class="conn-line"></div>
+        <div class="conn-dot"></div>
+      </div>
+    </div>
+
+    <div class="agent rv d1">
+      <div class="agent-n">Agent 02 / Briefer</div>
+      <div class="agent-icon-text">02</div>
+      <div class="agent-name">The Briefer</div>
+      <div class="agent-role">Brief Agent</div>
+      <p class="agent-desc">Triggered at a handoff event. Generates a prioritized, context-rich brief — not a message dump, but an intelligent summary ranked by urgency with explicit action items and open questions surfaced.</p>
+    </div>
+
+    <div class="agent-conn rv d2">
+      <div class="conn-wrap">
+        <div class="conn-dot"></div>
+        <div class="conn-line"></div>
+        <div class="conn-dot"></div>
+      </div>
+    </div>
+
+    <div class="agent rv d2">
+      <div class="agent-n">Agent 03 / Closer</div>
+      <div class="agent-icon-text">03</div>
+      <div class="agent-name">The Closer</div>
+      <div class="agent-role">Follow-up Agent</div>
+      <p class="agent-desc">Monitors if the incoming person acted on critical items. 2 hours pass without a P0 being touched? It nudges. Logs handoff quality over time — building a live institutional memory.</p>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- USE CASES -->
+<section class="sec" id="usecases">
+  <div class="rv">
+    <div class="sec-tag">Where Pravah Flows</div>
+    <h2>One problem.<br>Every industry.</h2>
+  </div>
+  <div class="cases-grid">
+    <div class="case rv">
+      <div class="case-line cl2"></div>
+      <div class="case-glow"></div>
+      <div class="case-tag">Customer Support</div>
+      <div class="case-title">Agent Escalations</div>
+      <p class="case-desc">Every escalation is a churn risk. Pravah packages the full customer context so the next agent picks up exactly where anurag left off.</p>
+    </div>
+    <div class="case rv d1">
+      <div class="case-line cl3"></div>
+      <div class="case-glow"></div>
+      <div class="case-tag">Engineering</div>
+      <div class="case-title">Sprint &amp; PR Handoffs</div>
+      <p class="case-desc">Pravah captures architectural decisions, blockers, and open questions so no sprint momentum is ever lost mid-cycle.</p>
+    </div>
+    <div class="case rv d2">
+      <div class="case-line cl4"></div>
+      <div class="case-glow"></div>
+      <div class="case-tag">Sales</div>
+      <div class="case-title">Territory Transitions</div>
+      <p class="case-desc">Pravah builds institutional memory of every deal — objections, champions, next steps — that survives any rep leaving.</p>
+    </div>
+    <div class="case rv d3">
+      <div class="case-line cl1"></div>
+      <div class="case-glow"></div>
+      <div class="case-tag">Healthcare</div>
+      <div class="case-title">Nurse Shift Changes</div>
+      <p class="case-desc">Pravah ensures no critical notes, medication changes, or patient flags get lost between shifts.</p>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ROI -->
+<section class="sec" id="roi">
+  <div class="roi-grid">
+    <div class="rv">
+      <div class="sec-tag">The Business Case</div>
+      <h2>The cost hides<br>in plain sight.</h2>
+      <p class="body-copy">A support team of 20 agents, each wasting 20 minutes per day on handoff reconstruction. That's 1,667 hours a year — gone. Quantifiable from day one.</p>
+      <p class="body-copy" style="margin-top:14px">And the more handoffs Pravah captures, the smarter the briefs get. The accumulated handoff data becomes a company-specific intelligence layer. <em style="color:var(--gold2);font-style:italic">The data flywheel is the moat.</em></p>
+    </div>
+    <div class="roi-card rv d1">
+      <div class="roi-card-tag">// ROI Estimate — Support Team of 20</div>
+      <div class="roi-row"><span class="roi-lbl">Agents on team</span><span class="roi-val">20</span></div>
+      <div class="roi-row"><span class="roi-lbl">Wasted time / agent / day</span><span class="roi-val">20 min</span></div>
+      <div class="roi-row"><span class="roi-lbl">Working days / year</span><span class="roi-val">250</span></div>
+      <div class="roi-row"><span class="roi-lbl">Hours lost / year</span><span class="roi-val">1,667 hrs</span></div>
+      <div class="roi-row"><span class="roi-lbl">At avg. support cost (&#8377;420/hr)</span><span class="roi-val">&#8377;7,00,140</span></div>
+      <div class="roi-row"><span class="roi-lbl">Annual recovery with Pravah</span><span class="roi-val">&#8377;7L+</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO SECTION -->
+<section class="demo-sec" id="demo">
+  <div class="demo-inner rv">
+    <div class="demo-tag">
+      <div class="demo-tag-dot"></div>
+      Live Hackathon Demo
+    </div>
+    <h2>See it work in 3 minutes.</h2>
+    <p>Watch Pravah shadow a real Slack thread, trigger a handoff event, and generate an intelligent brief — live. No setup. No slides.</p>
+    <a href="https://pravah-demo.vercel.app" target="_blank" class="btn-demo">
+      Launch Live Demo
+      <span class="btn-demo-arrow">&#8594;</span>
+    </a>
+  </div>
+</section>
+
+<!-- TECH -->
+<section class="sec" style="padding-top:80px;padding-bottom:80px">
+  <div style="text-align:center" class="rv">
+    <div class="sec-tag" style="justify-content:center">Built On</div>
+    <h2>Proven stack. No new infra.</h2>
+    <p style="color:var(--paper3);margin-top:12px;font-size:15px">Hooks into tools your team already uses.</p>
+  </div>
+  <div class="tech-pills rv">
+    <div class="pill">Next.js 14</div>
+    <div class="pill">Tailwind CSS</div>
+    <div class="pill">Express.js</div>
+    <div class="pill">PostgreSQL</div>
+    <div class="pill">pgvector</div>
+    <div class="pill">Redis</div>
+    <div class="pill">Claude Sonnet API</div>
+    <div class="pill">Slack Events API</div>
+    <div class="pill">Jira Webhooks</div>
+    <div class="pill">Socket.io</div>
+    <div class="pill">JWT Auth</div>
+    <div class="pill">Vercel + Railway</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec" id="cta">
+  <div class="cta-orb1"></div>
+  <div class="cta-orb2"></div>
+  <div class="sec-tag rv" style="justify-content:center">Ready to Flow</div>
+  <h2 class="rv">AI that connects<br>the <span style="color:var(--gold)">in-between.</span></h2>
+  <p class="rv">Stop losing work at the seams. See Pravah make every handoff invisible.</p>
+  <div class="cta-btns rv">
+    <a href="https://pravah-demo.vercel.app" target="_blank" class="btn-fill" style="padding:20px 48px;font-size:14px">View Live Demo</a>
+    <a href="mailto:hello@pravah.ai" class="btn-outline" style="padding:20px 36px;font-size:14px">Get in Touch</a>
+  </div>
+  <p class="cta-note rv">No credit card &nbsp;·&nbsp; Setup in minutes &nbsp;·&nbsp; Works with your existing tools</p>
+</section>
+
+<footer>
+  <div class="f-logo">Pravah<b>.ai</b></div>
+  <div class="f-note">// The AI handoff intelligence layer</div>
+  <div class="f-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="mailto:hello@pravah.ai">Contact</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
