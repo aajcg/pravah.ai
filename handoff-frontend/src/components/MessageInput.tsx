@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useHandoffStore } from "@/store/use-handoff-store";
+import { SlackConnect } from "@/components/SlackConnect";
 
 const typingHints = [
   "Payment API timeout is blocking deployment...",
@@ -93,6 +94,7 @@ export default function MessageInput() {
       whileHover={{ y: -3, rotateX: 2, rotateY: -2 }}
       transition={{ type: "spring", stiffness: 220, damping: 16 }}
       style={{ transformStyle: "preserve-3d" }}
+      className="flex flex-col gap-4"
     >
       <Card className="h-full">
         <CardHeader>
@@ -141,6 +143,11 @@ export default function MessageInput() {
               </div>
             )}
           </form>
+
+          <div className="mt-4 pt-4 border-t border-slate-800">
+            <h4 className="text-sm font-medium text-slate-300 mb-2">Or import directly:</h4>
+            <SlackConnect />
+          </div>
         </CardContent>
       </Card>
     </motion.div>
