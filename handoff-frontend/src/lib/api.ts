@@ -72,13 +72,3 @@ export async function chatAboutHandoff(
 
   return answer.trim() || "Not specified in handoff";
 }
-
-export async function shareHandoffToSlack(
-  handoff: HandoffPayload,
-  title?: string
-): Promise<void> {
-  await api.post("/handoff/share/slack", {
-    handoff,
-    title,
-  });
-}

@@ -12,7 +12,6 @@ const CORS_ORIGINS = (process.env.CORS_ORIGIN ?? "http://localhost:3000")
   .filter(Boolean);
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const CHAT_FALLBACK_ANSWER = "Not specified in handoff";
-const SLACK_TIMEOUT_MS = 10000;
 const HANDOFF_KEYS = [
   "blockers",
   "tasks",
@@ -61,60 +60,6 @@ function sanitizeHandoffOutput(output) {
   }
 
   return sanitized;
-}
-
-function formatSectionTitle(key) {
-  return key.charAt(0).toUpperCase() + key.slice(1);
-}
-
-function buildSlackMessage(handoff, title = "Pravah AI Handoff") {
-  const safeHandoff = sanitizeHandoffOutput(handoff);
-  const lines = [`*${title}*`, ""];
-
-  for (const key of HANDOFF_KEYS) {
-    const entries = safeHandoff[key];
-    lines.push(`*${formatSectionTitle(key)}*`);
-
-    if (!entries.length) {
-      lines.push("- None");
-      lines.push("");
-      continue;
-    }
-
-    for (const entry of entries) {
-      lines.push(`- ${entry}`);
-    }
-
-    lines.push("");
-  }
-
-  return lines.join("\n").trim();
-}
-
-async function postMessageToSlack(text) {
-  const webhookUrl = process.env.SLACK_WEBHOOK_URL?.trim();
-  if (!webhookUrl) {
-    return {
-      ok: false,
-      reason: "missing_webhook",
-    };
-  }
-
-  await axios.post(
-    webhookUrl,
-    {
-      text,
-      mrkdwn: true,
-    },
-    {
-      timeout: SLACK_TIMEOUT_MS,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  return { ok: true };
 }
 
 function answerFromStructuredHandoff(question, handoff) {
@@ -239,39 +184,6 @@ app.post("/chat", async (req, res) => {
 
   const answer = await answerFromHandoff(question.trim(), handoff);
   return res.json({ answer });
-});
-
-app.post("/handoff/share/slack", async (req, res) => {
-  const { handoff, title } = req.body ?? {};
-  const isValidHandoff = handoff && typeof handoff === "object" && !Array.isArray(handoff);
-  const isValidTitle = title === undefined || typeof title === "string";
-
-  if (!isValidHandoff || !isValidTitle) {
-    return res.status(400).json({
-      error: "Invalid input: body must be { handoff: object, title?: string }",
-    });
-  }
-
-  const message = buildSlackMessage(
-    handoff,
-    typeof title === "string" && title.trim() ? title.trim() : "Pravah AI Handoff"
-  );
-
-  try {
-    const result = await postMessageToSlack(message);
-    if (!result.ok && result.reason === "missing_webhook") {
-      return res.status(500).json({
-        error: "SLACK_WEBHOOK_URL is not configured on the server",
-      });
-    }
-
-    return res.json({ ok: true });
-  } catch (error) {
-    console.error("/handoff/share/slack failed", error?.message ?? error);
-    return res.status(502).json({
-      error: "Failed to post handoff to Slack",
-    });
-  }
 });
 
 app.use((error, _req, res, next) => {
