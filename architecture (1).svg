@@ -1,0 +1,402 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 560" width="1080" height="560">
+<defs>
+  <pattern id="dots" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+    <circle cx="18" cy="18" r="0.6" fill="#1a2e20"/>
+  </pattern>
+  <pattern id="grid" x="0" y="0" width="72" height="72" patternUnits="userSpaceOnUse">
+    <rect width="72" height="72" fill="none" stroke="#0f1f14" stroke-width="0.4"/>
+  </pattern>
+  <filter id="glow-g" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="glow-b" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="glow-p" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="4" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="glow-a" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="glow-r" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="title-glow">
+    <feGaussianBlur stdDeviation="5" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <marker id="mg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#00ff88" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <marker id="mb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#4fc3f7" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <marker id="ma" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#ffca28" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <marker id="mp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#ce93d8" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <marker id="mr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#ff7043" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <marker id="mc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+    <path d="M1 2L8 5L1 8" fill="none" stroke="#26c6da" stroke-width="1.8" stroke-linecap="round"/>
+  </marker>
+  <clipPath id="llm-clip"><rect x="620" y="70" width="192" height="110"/></clipPath>
+  <clipPath id="nlp-clip"><rect x="620" y="198" width="192" height="96"/></clipPath>
+  <clipPath id="sem-clip"><rect x="620" y="308" width="192" height="96"/></clipPath>
+  <radialGradient id="bg-tl" cx="0%" cy="0%" r="45%">
+    <stop offset="0%" stop-color="#00ff88" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="bg-br" cx="100%" cy="100%" r="40%">
+    <stop offset="0%" stop-color="#ce93d8" stop-opacity="0.05"/>
+    <stop offset="100%" stop-color="#ce93d8" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<style>
+  @keyframes dashflow   { to { stroke-dashoffset: -14; } }
+  @keyframes pulse-g  { 0%,100%{stroke-opacity:.4;stroke-width:1.3} 50%{stroke-opacity:1;stroke-width:2.2} }
+  @keyframes pulse-b  { 0%,100%{stroke-opacity:.4;stroke-width:1.3} 50%{stroke-opacity:1;stroke-width:2.2} }
+  @keyframes pulse-p  { 0%,100%{stroke-opacity:.35;stroke-width:1.4} 50%{stroke-opacity:1;stroke-width:2.4} }
+  @keyframes pulse-a  { 0%,100%{stroke-opacity:.35;stroke-width:1.3} 50%{stroke-opacity:1;stroke-width:2.2} }
+  @keyframes pulse-r  { 0%,100%{stroke-opacity:.35;stroke-width:1.3} 50%{stroke-opacity:1;stroke-width:2.2} }
+  @keyframes pulse-c  { 0%,100%{stroke-opacity:.35;stroke-width:1.3} 50%{stroke-opacity:1;stroke-width:2.2} }
+  @keyframes scan-ln  { 0%{transform:translateY(0);opacity:.85} 50%{transform:translateY(62px);opacity:.08} 100%{transform:translateY(0);opacity:.85} }
+  @keyframes scan-ln2 { 0%{transform:translateY(0);opacity:.8} 50%{transform:translateY(48px);opacity:.08} 100%{transform:translateY(0);opacity:.8} }
+  @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:.15} }
+  .fg { stroke-dasharray:8 5; animation:dashflow .72s linear infinite; }
+  .fb { stroke-dasharray:8 5; animation:dashflow .82s linear infinite; }
+  .fa { stroke-dasharray:8 5; animation:dashflow .88s linear infinite; }
+  .fp { stroke-dasharray:6 5; animation:dashflow 1.05s linear infinite; }
+  .fr { stroke-dasharray:7 5; animation:dashflow .78s linear infinite; }
+  .fc { stroke-dasharray:7 5; animation:dashflow .92s linear infinite; }
+  .bg { animation:pulse-g 2.1s ease-in-out infinite; }
+  .bb { animation:pulse-b 2.5s ease-in-out infinite; }
+  .bp { animation:pulse-p 1.8s ease-in-out infinite; }
+  .ba { animation:pulse-a 2.7s ease-in-out infinite; }
+  .br { animation:pulse-r 2.3s ease-in-out infinite; }
+  .bc { animation:pulse-c 2.0s ease-in-out infinite; }
+  .scan  { animation:scan-ln  2.1s ease-in-out infinite; clip-path:url(#llm-clip); }
+  .scan2 { animation:scan-ln2 1.85s ease-in-out infinite; clip-path:url(#nlp-clip); }
+  .scan3 { animation:scan-ln2 2.35s ease-in-out infinite; clip-path:url(#sem-clip); }
+</style>
+
+<!-- ── BACKGROUND ── -->
+<rect width="1080" height="560" rx="16" fill="#080f0b"/>
+<rect width="1080" height="560" rx="16" fill="url(#dots)" opacity="0.85"/>
+<rect width="1080" height="560" rx="16" fill="url(#grid)" opacity="0.35"/>
+<rect width="1080" height="560" fill="url(#bg-tl)"/>
+<rect width="1080" height="560" fill="url(#bg-br)"/>
+
+<!-- top bar -->
+<line x1="0" y1="36" x2="1080" y2="36" stroke="#1a2e1a" stroke-width="0.6"/>
+<text x="540" y="23" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#2a5535" letter-spacing="0.28em" filter="url(#title-glow)">PRAVAH.ai  ◆  MULTI-AGENT SYSTEM ARCHITECTURE  ◆  6 AGENTS ACTIVE</text>
+
+<!-- ── INTELLIGENCE LAYER BOX ── -->
+<rect x="610" y="52" width="210" height="360" rx="12" fill="#040b06" stroke="#1e3a22" stroke-width="0.9" stroke-dasharray="9 4"/>
+<text x="715" y="67" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#254830" letter-spacing="0.24em">── INTELLIGENCE LAYER ──</text>
+<path d="M610 62 L610 52 L620 52" fill="none" stroke="#244a28" stroke-width="1"/>
+<path d="M820 52 L820 52 L820 52" fill="none"/>
+<path d="M808 52 L820 52 L820 62" fill="none" stroke="#244a28" stroke-width="1"/>
+<path d="M610 402 L610 412 L620 412" fill="none" stroke="#244a28" stroke-width="1"/>
+<path d="M808 412 L820 412 L820 402" fill="none" stroke="#244a28" stroke-width="1"/>
+
+<!-- ══ FLOW LINES ══ -->
+<!-- 1: Input→Ingestor -->
+<line x1="122" y1="278" x2="166" y2="278" stroke="#00ff88" stroke-width="1.8" fill="none" class="fg" marker-end="url(#mg)"/>
+<!-- 2: Ingestor→Gateway -->
+<line x1="286" y1="278" x2="326" y2="278" stroke="#4fc3f7" stroke-width="1.8" fill="none" class="fb" marker-end="url(#mb)"/>
+<!-- 3: Gateway→Orchestrator -->
+<line x1="448" y1="278" x2="492" y2="278" stroke="#4fc3f7" stroke-width="1.8" fill="none" class="fb" marker-end="url(#mb)"/>
+<!-- 4: Orch→LLM (up-right) -->
+<path d="M 566 248 C 590 248 590 128 620 128" stroke="#4fc3f7" stroke-width="1.8" fill="none" class="fb" marker-end="url(#mb)"/>
+<!-- 5: Orch→NLP -->
+<path d="M 566 272 C 588 272 588 248 620 248" stroke="#ffca28" stroke-width="1.8" fill="none" class="fa" marker-end="url(#ma)"/>
+<!-- 6: Orch→Semantic (down-right) -->
+<path d="M 566 298 C 590 298 590 360 620 360" stroke="#ff7043" stroke-width="1.8" fill="none" class="fr" marker-end="url(#mr)"/>
+<!-- 7: LLM→Schema -->
+<path d="M 820 128 Q 858 128 858 204" stroke="#00ff88" stroke-width="1.8" fill="none" class="fg" marker-end="url(#mg)"/>
+<!-- 8: NLP→Schema -->
+<line x1="820" y1="248" x2="858" y2="248" stroke="#00ff88" stroke-width="1.8" fill="none" class="fg" marker-end="url(#mg)"/>
+<!-- 9: Semantic→Schema -->
+<path d="M 820 360 Q 858 360 858 292" stroke="#00ff88" stroke-width="1.8" fill="none" class="fg" marker-end="url(#mg)"/>
+<!-- 10: Schema→Output -->
+<line x1="964" y1="248" x2="1006" y2="248" stroke="#00ff88" stroke-width="1.8" fill="none" class="fg" marker-end="url(#mg)"/>
+<!-- 11: QA loop arc -->
+<path d="M 1048 366 C 1048 440 530 476 530 438 C 530 420 530 418 530 410" stroke="#ce93d8" stroke-width="1.5" fill="none" class="fp" marker-end="url(#mp)"/>
+
+<!-- edge labels -->
+<text x="144" y="271" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5535">msgs</text>
+<text x="306" y="271" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#1a4060">ingest</text>
+<text x="470" y="271" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#1a4060">dispatch</text>
+<text x="597" y="206" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#1a406a">extract</text>
+<text x="597" y="262" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#806010">enrich</text>
+<text x="597" y="312" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#7a3010">classify</text>
+<text x="985" y="241" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5535">JSON</text>
+
+<!-- ══ DATA PACKETS ══ -->
+<circle r="4.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 122 278 L 166 278" dur="1.1s" repeatCount="indefinite" begin="0s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="1.1s" repeatCount="indefinite" begin="0s"/>
+</circle>
+<circle r="4.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 122 278 L 166 278" dur="1.1s" repeatCount="indefinite" begin="0.55s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="1.1s" repeatCount="indefinite" begin="0.55s"/>
+</circle>
+<circle r="4" fill="#4fc3f7" opacity="0" filter="url(#glow-b)">
+  <animateMotion path="M 286 278 L 326 278" dur="0.95s" repeatCount="indefinite" begin="0.2s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.95s" repeatCount="indefinite" begin="0.2s"/>
+</circle>
+<circle r="4" fill="#4fc3f7" opacity="0" filter="url(#glow-b)">
+  <animateMotion path="M 448 278 L 492 278" dur="0.88s" repeatCount="indefinite" begin="0.4s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.88s" repeatCount="indefinite" begin="0.4s"/>
+</circle>
+<circle r="3.5" fill="#4fc3f7" opacity="0" filter="url(#glow-b)">
+  <animateMotion path="M 566 248 C 590 248 590 128 620 128" dur="1.2s" repeatCount="indefinite" begin="0.6s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="1.2s" repeatCount="indefinite" begin="0.6s"/>
+</circle>
+<circle r="3.5" fill="#ffca28" opacity="0" filter="url(#glow-a)">
+  <animateMotion path="M 566 272 C 588 272 588 248 620 248" dur="1.1s" repeatCount="indefinite" begin="0.9s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="1.1s" repeatCount="indefinite" begin="0.9s"/>
+</circle>
+<circle r="3.5" fill="#ff7043" opacity="0" filter="url(#glow-r)">
+  <animateMotion path="M 566 298 C 590 298 590 360 620 360" dur="1.2s" repeatCount="indefinite" begin="1.1s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="1.2s" repeatCount="indefinite" begin="1.1s"/>
+</circle>
+<circle r="3.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 820 128 Q 858 128 858 204" dur="0.9s" repeatCount="indefinite" begin="0.85s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.9s" repeatCount="indefinite" begin="0.85s"/>
+</circle>
+<circle r="3.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 820 248 L 858 248" dur="0.78s" repeatCount="indefinite" begin="1.1s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.78s" repeatCount="indefinite" begin="1.1s"/>
+</circle>
+<circle r="3.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 820 360 Q 858 360 858 292" dur="0.9s" repeatCount="indefinite" begin="1.3s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.9s" repeatCount="indefinite" begin="1.3s"/>
+</circle>
+<circle r="4.5" fill="#00ff88" opacity="0" filter="url(#glow-g)">
+  <animateMotion path="M 964 248 L 1006 248" dur="0.95s" repeatCount="indefinite" begin="0.5s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.05;0.88;1" dur="0.95s" repeatCount="indefinite" begin="0.5s"/>
+</circle>
+<circle r="3.5" fill="#ce93d8" opacity="0" filter="url(#glow-p)">
+  <animateMotion path="M 1048 366 C 1048 440 530 476 530 438 C 530 420 530 418 530 410" dur="2.8s" repeatCount="indefinite" begin="0.5s"/>
+  <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.04;0.9;1" dur="2.8s" repeatCount="indefinite" begin="0.5s"/>
+</circle>
+
+<!-- ══ NODE 1 — RAW INPUT ══ -->
+<rect x="16" y="242" width="106" height="72" rx="10" fill="#050f08" stroke="#00ff88" stroke-width="1.3" class="bg"/>
+<path d="M16 252 L16 242 L26 242" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M112 242 L122 242 L122 252" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M16 304 L16 314 L26 314" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M112 314 L122 314 L122 304" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<text x="69" y="265" text-anchor="middle" font-size="16">💬</text>
+<text x="69" y="282" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="700" fill="#00ff88" letter-spacing="0.08em">RAW INPUT</text>
+<text x="69" y="295" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#2e6040">Slack · Chat</text>
+<text x="69" y="307" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#1a3828">raw messages</text>
+
+<!-- ══ NODE 2 — INGESTOR AGENT ══ -->
+<rect x="166" y="228" width="120" height="100" rx="10" fill="#030b10" stroke="#4fc3f7" stroke-width="1.3" class="bb"/>
+<path d="M166 238 L166 228 L176 228" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M276 228 L286 228 L286 238" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M166 318 L166 328 L176 328" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M276 328 L286 328 L286 318" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<circle cx="226" cy="248" r="6" fill="none" stroke="#4fc3f7" stroke-width="1" opacity="0">
+  <animate attributeName="r" values="5;15;5" dur="2.1s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.7;0;0.7" dur="2.1s" repeatCount="indefinite"/>
+</circle>
+<text x="226" y="260" text-anchor="middle" font-size="16">📡</text>
+<text x="226" y="277" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="700" fill="#4fc3f7" letter-spacing="0.07em">INGESTOR</text>
+<text x="226" y="291" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="#38a8cc">AGENT</text>
+<text x="226" y="305" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#1a4a5a">dedup · normalize</text>
+<text x="226" y="317" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#0e2e3a">thread-aware parse</text>
+
+<!-- ══ NODE 3 — API GATEWAY ══ -->
+<rect x="326" y="228" width="122" height="100" rx="10" fill="#04090f" stroke="#26c6da" stroke-width="1.3" class="bc"/>
+<path d="M326 238 L326 228 L336 228" fill="none" stroke="#26c6da" stroke-width="1.3"/>
+<path d="M438 228 L448 228 L448 238" fill="none" stroke="#26c6da" stroke-width="1.3"/>
+<path d="M326 318 L326 328 L336 328" fill="none" stroke="#26c6da" stroke-width="1.3"/>
+<path d="M438 328 L448 328 L448 318" fill="none" stroke="#26c6da" stroke-width="1.3"/>
+<circle cx="387" cy="244" r="3.5" fill="#26c6da">
+  <animate attributeName="opacity" values="1;0.1;1" dur="1.4s" repeatCount="indefinite"/>
+</circle>
+<text x="387" y="264" text-anchor="middle" font-size="16">🚀</text>
+<text x="387" y="281" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="700" fill="#26c6da" letter-spacing="0.06em">API GATEWAY</text>
+<text x="387" y="296" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#1a6070">Express · Node.js</text>
+<text x="387" y="310" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#0e3040">auth · rate-limit</text>
+<text x="387" y="322" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#082030">route · validate</text>
+
+<!-- ══ NODE 4 — ORCHESTRATOR ══ -->
+<circle cx="529" cy="278" r="86" fill="none" stroke="#b39ddb" stroke-width="0.7" stroke-dasharray="12 7" opacity="0.28">
+  <animateTransform attributeName="transform" type="rotate" from="0 529 278" to="360 529 278" dur="13s" repeatCount="indefinite"/>
+</circle>
+<circle cx="529" cy="278" r="96" fill="none" stroke="#9575cd" stroke-width="0.4" stroke-dasharray="4 12" opacity="0.14">
+  <animateTransform attributeName="transform" type="rotate" from="360 529 278" to="0 529 278" dur="20s" repeatCount="indefinite"/>
+</circle>
+<circle cx="529" cy="278" r="6" fill="#b39ddb" opacity="0.8">
+  <animate attributeName="r" values="5;8;5" dur="1.8s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.35;1;0.35" dur="1.8s" repeatCount="indefinite"/>
+</circle>
+<circle cx="529" cy="278" r="6" fill="none" stroke="#b39ddb" stroke-width="1">
+  <animate attributeName="r" values="6;26" dur="1.8s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.7;0" dur="1.8s" repeatCount="indefinite"/>
+</circle>
+<rect x="492" y="156" width="148" height="244" rx="13" fill="#09071a" stroke="#b39ddb" stroke-width="1.5" class="bp"/>
+<path d="M492 166 L492 156 L502 156" fill="none" stroke="#b39ddb" stroke-width="1.5"/>
+<path d="M630 156 L640 156 L640 166" fill="none" stroke="#b39ddb" stroke-width="1.5"/>
+<path d="M492 390 L492 400 L502 400" fill="none" stroke="#b39ddb" stroke-width="1.5"/>
+<path d="M630 400 L640 400 L640 390" fill="none" stroke="#b39ddb" stroke-width="1.5"/>
+<line x1="508" y1="176" x2="529" y2="278" stroke="#b39ddb" stroke-width="0.5" opacity="0.16"/>
+<line x1="620" y1="176" x2="529" y2="278" stroke="#b39ddb" stroke-width="0.5" opacity="0.16"/>
+<line x1="508" y1="380" x2="529" y2="278" stroke="#b39ddb" stroke-width="0.5" opacity="0.16"/>
+<line x1="620" y1="380" x2="529" y2="278" stroke="#b39ddb" stroke-width="0.5" opacity="0.16"/>
+<circle cx="508" cy="176" r="2" fill="#b39ddb" opacity="0.22">
+  <animate attributeName="opacity" values="0.08;0.55;0.08" dur="2.1s" repeatCount="indefinite"/>
+</circle>
+<circle cx="620" cy="176" r="2" fill="#b39ddb" opacity="0.22">
+  <animate attributeName="opacity" values="0.08;0.55;0.08" dur="2.5s" repeatCount="indefinite" begin="0.4s"/>
+</circle>
+<circle cx="508" cy="380" r="2" fill="#b39ddb" opacity="0.22">
+  <animate attributeName="opacity" values="0.08;0.55;0.08" dur="2.0s" repeatCount="indefinite" begin="0.8s"/>
+</circle>
+<circle cx="620" cy="380" r="2" fill="#b39ddb" opacity="0.22">
+  <animate attributeName="opacity" values="0.08;0.55;0.08" dur="2.3s" repeatCount="indefinite" begin="0.2s"/>
+</circle>
+<text x="529" y="192" text-anchor="middle" font-size="19">🤖</text>
+<text x="529" y="211" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#b39ddb" letter-spacing="0.1em">PRAVAH</text>
+<text x="529" y="227" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#9c89e0" letter-spacing="0.07em">ORCHESTRATOR</text>
+<text x="529" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" fill="#6a4a9a">Master AI Agent</text>
+<text x="529" y="262" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#4a3070">routes · coordinates</text>
+<text x="529" y="276" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#3a2060">decides · dispatches</text>
+<text x="529" y="290" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#2a1a50">validates · merges</text>
+<text x="529" y="304" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#201040">priority-weighted</text>
+<text x="529" y="318" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#180e38">agent selection</text>
+<text x="529" y="332" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#120a30">confidence scoring</text>
+
+<!-- ══ NODE 5 — LLM EXTRACTION AGENT ══ -->
+<rect x="620" y="68" width="200" height="118" rx="10" fill="#03090f" stroke="#4fc3f7" stroke-width="1.3" class="bb"/>
+<path d="M620 78 L620 68 L630 68" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M810 68 L820 68 L820 78" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M620 176 L620 186 L630 186" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<path d="M810 186 L820 186 L820 176" fill="none" stroke="#4fc3f7" stroke-width="1.3"/>
+<line x1="626" y1="83" x2="814" y2="83" stroke="#4fc3f7" stroke-width="1.1" opacity="0.75" class="scan"/>
+<text x="720" y="103" text-anchor="middle" font-size="17">🧠</text>
+<text x="720" y="121" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#4fc3f7" letter-spacing="0.08em">LLM EXTRACTION</text>
+<text x="720" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="#38a8cc">AGENT</text>
+<text x="720" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#1a4a5a">OpenRouter · GPT-4 · Claude</text>
+<text x="720" y="163" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#0e2e3a">tasks · owners · deadlines</text>
+<text x="720" y="175" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#082030">context-aware extraction</text>
+
+<!-- ══ NODE 6 — NLP CONTEXT AGENT ══ -->
+<rect x="620" y="198" width="200" height="100" rx="10" fill="#0c0900" stroke="#ffca28" stroke-width="1.3" class="ba"/>
+<path d="M620 208 L620 198 L630 198" fill="none" stroke="#ffca28" stroke-width="1.3"/>
+<path d="M810 198 L820 198 L820 208" fill="none" stroke="#ffca28" stroke-width="1.3"/>
+<path d="M620 288 L620 298 L630 298" fill="none" stroke="#ffca28" stroke-width="1.3"/>
+<path d="M810 298 L820 298 L820 288" fill="none" stroke="#ffca28" stroke-width="1.3"/>
+<line x1="626" y1="212" x2="814" y2="212" stroke="#ffca28" stroke-width="1.1" opacity="0.75" class="scan2"/>
+<text x="720" y="228" text-anchor="middle" font-size="16">🔗</text>
+<text x="720" y="244" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#ffca28" letter-spacing="0.07em">NLP CONTEXT</text>
+<text x="720" y="258" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="#d4a820">AGENT</text>
+<text x="720" y="273" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#806010">dependency graph · enrichment</text>
+<text x="720" y="286" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#604800">blockers · decisions · coreferences</text>
+
+<!-- ══ NODE 7 — SEMANTIC CLASSIFIER ══ -->
+<rect x="620" y="308" width="200" height="100" rx="10" fill="#120500" stroke="#ff7043" stroke-width="1.3" class="br"/>
+<path d="M620 318 L620 308 L630 308" fill="none" stroke="#ff7043" stroke-width="1.3"/>
+<path d="M810 308 L820 308 L820 318" fill="none" stroke="#ff7043" stroke-width="1.3"/>
+<path d="M620 398 L620 408 L630 408" fill="none" stroke="#ff7043" stroke-width="1.3"/>
+<path d="M810 408 L820 408 L820 398" fill="none" stroke="#ff7043" stroke-width="1.3"/>
+<line x1="626" y1="322" x2="814" y2="322" stroke="#ff7043" stroke-width="1.1" opacity="0.75" class="scan3"/>
+<text x="720" y="342" text-anchor="middle" font-size="16">🎯</text>
+<text x="720" y="357" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" font-weight="700" fill="#ff7043" letter-spacing="0.07em">SEMANTIC CLASSIFIER</text>
+<text x="720" y="371" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="#e05030">AGENT</text>
+<text x="720" y="386" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#7a3010">priority scoring · urgency tagging</text>
+<text x="720" y="399" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#601800">impact analysis · categorization</text>
+
+<!-- ══ NODE 8 — SCHEMA ENGINE ══ -->
+<rect x="858" y="199" width="106" height="98" rx="10" fill="#050f08" stroke="#00ff88" stroke-width="1.3" class="bg"/>
+<path d="M858 209 L858 199 L868 199" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M954 199 L964 199 L964 209" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M858 287 L858 297 L868 297" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<path d="M954 297 L964 297 L964 287" fill="none" stroke="#00ff88" stroke-width="1.3"/>
+<circle cx="882" cy="219" r="2.5" fill="#00ff88">
+  <animate attributeName="opacity" values="0.2;1;0.2" dur="0.9s" repeatCount="indefinite" begin="0s"/>
+  <animate attributeName="r" values="2;3.5;2" dur="0.9s" repeatCount="indefinite" begin="0s"/>
+</circle>
+<circle cx="905" cy="219" r="2.5" fill="#00ff88">
+  <animate attributeName="opacity" values="0.2;1;0.2" dur="0.9s" repeatCount="indefinite" begin="0.3s"/>
+  <animate attributeName="r" values="2;3.5;2" dur="0.9s" repeatCount="indefinite" begin="0.3s"/>
+</circle>
+<circle cx="928" cy="219" r="2.5" fill="#00ff88">
+  <animate attributeName="opacity" values="0.2;1;0.2" dur="0.9s" repeatCount="indefinite" begin="0.6s"/>
+  <animate attributeName="r" values="2;3.5;2" dur="0.9s" repeatCount="indefinite" begin="0.6s"/>
+</circle>
+<text x="911" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="#00ff88">📦 SCHEMA</text>
+<text x="911" y="256" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8.5" font-weight="700" fill="#00cc6a">ENGINE</text>
+<text x="911" y="271" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5030">merge · enforce</text>
+<text x="911" y="283" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#1a3020">validate · emit</text>
+
+<!-- ══ NODE 9 — HANDOFF OUTPUT ══ -->
+<rect x="1006" y="200" width="66" height="96" rx="10" fill="#030d06" stroke="#00cc6a" stroke-width="1.3" class="bg"/>
+<path d="M1006 210 L1006 200 L1016 200" fill="none" stroke="#00cc6a" stroke-width="1.3"/>
+<path d="M1062 200 L1072 200 L1072 210" fill="none" stroke="#00cc6a" stroke-width="1.3"/>
+<path d="M1006 286 L1006 296 L1016 296" fill="none" stroke="#00cc6a" stroke-width="1.3"/>
+<path d="M1062 296 L1072 296 L1072 286" fill="none" stroke="#00cc6a" stroke-width="1.3"/>
+<text x="1039" y="226" text-anchor="middle" font-size="15">📊</text>
+<text x="1039" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="#00ff88">HANDOFF</text>
+<text x="1039" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="8" font-weight="700" fill="#00cc6a">JSON</text>
+<text x="1039" y="268" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#2a5030">tasks</text>
+<text x="1039" y="278" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#2a5030">owners</text>
+<text x="1039" y="288" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="6.5" fill="#2a5030">deadlines</text>
+
+<!-- Output node downward connector to QA -->
+<path d="M 1039 296 L 1039 366 C 1039 390 1048 390 1048 366" stroke="#ce93d8" stroke-width="1.2" fill="none" stroke-dasharray="5 4" opacity="0.5"/>
+
+<!-- ══ NODE 10 — CHAT QA AGENT ══ -->
+<rect x="458" y="430" width="144" height="82" rx="10" fill="#0c0618" stroke="#ce93d8" stroke-width="1.3" class="bp"/>
+<path d="M458 440 L458 430 L468 430" fill="none" stroke="#ce93d8" stroke-width="1.3"/>
+<path d="M592 430 L602 430 L602 440" fill="none" stroke="#ce93d8" stroke-width="1.3"/>
+<path d="M458 502 L458 512 L468 512" fill="none" stroke="#ce93d8" stroke-width="1.3"/>
+<path d="M592 512 L602 512 L602 502" fill="none" stroke="#ce93d8" stroke-width="1.3"/>
+<circle cx="502" cy="468" r="3" fill="#ce93d8" opacity="0.35">
+  <animate attributeName="opacity" values="0.15;0.75;0.15" dur="1.1s" repeatCount="indefinite" begin="0s"/>
+</circle>
+<circle cx="515" cy="468" r="3" fill="#ce93d8" opacity="0.35">
+  <animate attributeName="opacity" values="0.15;0.75;0.15" dur="1.1s" repeatCount="indefinite" begin="0.35s"/>
+</circle>
+<circle cx="528" cy="468" r="3" fill="#ce93d8" opacity="0.35">
+  <animate attributeName="opacity" values="0.15;0.75;0.15" dur="1.1s" repeatCount="indefinite" begin="0.7s"/>
+</circle>
+<text x="530" y="453" text-anchor="middle" font-size="15">💡</text>
+<text x="530" y="484" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" font-weight="700" fill="#ce93d8" letter-spacing="0.06em">CHAT QA AGENT</text>
+<text x="530" y="498" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7.5" fill="#7a4a98">natural language queries</text>
+<text x="530" y="510" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="7" fill="#5a3078">ask · answer · explain</text>
+
+<!-- ══ LEGEND ══ -->
+<line x1="16" y1="530" x2="1064" y2="530" stroke="#1a2e1a" stroke-width="0.6"/>
+<text x="22" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5535" letter-spacing="0.06em">FLOW →</text>
+<line x1="60" y1="543" x2="84" y2="543" stroke="#00ff88" stroke-width="1.4" stroke-dasharray="7 4"/>
+<text x="88" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5535">primary</text>
+<line x1="126" y1="543" x2="150" y2="543" stroke="#4fc3f7" stroke-width="1.4" stroke-dasharray="7 4"/>
+<text x="154" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#1a4060">dispatch</text>
+<line x1="196" y1="543" x2="220" y2="543" stroke="#ffca28" stroke-width="1.4" stroke-dasharray="7 4"/>
+<text x="224" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#806010">nlp-enrich</text>
+<line x1="272" y1="543" x2="296" y2="543" stroke="#ff7043" stroke-width="1.4" stroke-dasharray="7 4"/>
+<text x="300" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#7a3010">classify</text>
+<line x1="336" y1="543" x2="360" y2="543" stroke="#ce93d8" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="364" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#5a3870">qa-loop</text>
+<circle r="3.5" fill="#00ff88" cx="408" cy="543"/>
+<text x="416" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a5535">data packet</text>
+<circle cx="724" cy="543" r="3.5" fill="#00ff88">
+  <animate attributeName="opacity" values="1;0.15;1" dur="1.3s" repeatCount="indefinite"/>
+</circle>
+<text x="732" y="546" font-family="'JetBrains Mono',monospace" font-size="7" fill="#2a4a2a" letter-spacing="0.07em">6 AGENTS ACTIVE  ◆  ALL SYSTEMS NOMINAL</text>
+</svg>
