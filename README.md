@@ -1,220 +1,191 @@
-# PRAVAH.ai
+# 🚀 PRAVAH.ai  
+Turn messy conversations into **structured engineering handoffs** automatically.
 
-PRAVAH.ai converts conversation messages into a structured, actionable handoff JSON for engineering teams. It also supports question answering on top of the extracted handoff.
+![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/API-Express-black?logo=express)
+![JavaScript](https://img.shields.io/badge/Language-JavaScript-yellow?logo=javascript)
+![OpenRouter](https://img.shields.io/badge/LLM-OpenRouter-blue)
+![Slack](https://img.shields.io/badge/Input-Slack-4A154B?logo=slack)
+![Tests](https://img.shields.io/badge/Tests-node:test-green)
 
-The project includes:
-- An Express API server for extraction and Q&A
-- A robust extraction module with OpenRouter + local fallback
-- Unit tests for extraction behavior
-- A separate marketing landing page
+---
 
-## What It Solves
+## ✨ Overview
 
-Given raw chat-like messages, PRAVAH.ai produces this schema:
+**PRAVAH.ai** converts chat messages (Slack, discussions, or shift updates) into a **structured JSON handoff** that engineering teams can immediately act on.
+
+Instead of manually summarizing conversations, the system extracts:
+
+- Tasks
+- Owners
+- Blockers
+- Deadlines
+- Decisions
+- Dependencies
+
+This enables **clean shift handoffs, async collaboration, and automation-ready updates.**
+
+---
+
+## 🔗 Slack Integration
+
+PRAVAH.ai integrates with **Slack** so team conversations can be directly used as input.
+
+Why this matters:
+
+- Engineering discussions already happen in Slack
+- No manual summarization required
+- Important context is never lost
+- Instant structured handoffs for the next shift or team
+
+---
+
+## 📦 Example Output
+
+Input messages:
+
+```json
+[
+ "Rahul is working on retry logic for checkout service",
+ "Payment API timeout is blocking deployment",
+ "Fix by tonight"
+]
+```
+
+Generated handoff:
 
 ```json
 {
-  "blockers": [],
-  "tasks": [],
-  "owners": [],
-  "deadlines": [],
-  "decisions": [],
-  "dependencies": []
+ "blockers": ["Payment API timeout is blocking deployment"],
+ "tasks": ["Rahul is working on retry logic for checkout service"],
+ "owners": ["Rahul -> retry logic for checkout service"],
+ "deadlines": ["Fix by tonight"],
+ "decisions": [],
+ "dependencies": []
 }
 ```
 
-This enables cleaner shift handoffs, async status updates, and downstream automation.
+---
 
-## Project Structure
+## 🏗 Architecture
 
-```text
-PRAVAH.ai/
-  landing page/
-    index.html                 # Static landing page
-  src/
-    extractHandoff.js          # Core extraction logic (LLM + local fallback)
-    server.js                  # Express API server and chat endpoint
-  test/
-    extractHandoff.test.js     # Unit tests (node:test)
-  .env                         # Local secrets (ignored by git)
-  .env.example                 # Environment template
-  .gitignore
-  README.md
+```
+Slack / Client
+      │
+      ▼
+ Express API Server
+      │
+      ▼
+Extraction Engine
+ (LLM + fallback)
+      │
+      ▼
+Structured Handoff JSON
+      │
+      ▼
+Chat QA on Handoff
 ```
 
-## Architecture
+### Core Components
 
-### High-level components
-1. API Layer (`src/server.js`)
-2. Extraction Engine (`src/extractHandoff.js`)
-3. Test Layer (`test/extractHandoff.test.js`)
-4. Static UI Layer (`landing page/index.html`)
+**API Layer**
+`src/server.js`  
+Handles requests and exposes REST endpoints.
 
-### Runtime flow
-1. Client sends messages to `POST /handoff/extract`.
-2. Server validates input and calls `extractHandoff(messages)`.
-3. Extractor does one of the following:
-   - Uses OpenRouter (if `OPENROUTER_API_KEY` is present)
-   - Uses deterministic local keyword extraction fallback
-4. Server sanitizes final output and returns schema-safe JSON.
-5. Client can ask follow-up question via `POST /chat` with `{ question, handoff }`.
-6. Chat answer uses OpenRouter if key exists, otherwise deterministic answer from structured handoff.
+**Extraction Engine**
+`src/extractHandoff.js`  
+Uses **OpenRouter LLM** with a **rule-based fallback** to always return structured JSON.
 
-### Architecture diagram
+**Test Layer**
+`test/extractHandoff.test.js`  
+Validates extraction behavior.
 
-```mermaid
-flowchart TD
-  A[Client / Frontend] --> B[Express Server src/server.js]
-  B --> C[POST /handoff/extract]
-  B --> D[POST /chat]
+**Landing Page**
+`landing page/index.html`
 
-  C --> E[extractHandoff module]
-  E --> F{OPENROUTER_API_KEY set?}
-  F -->|Yes| G[OpenRouter API]
-  F -->|No| H[Local fallback extractor]
-  G --> I[Normalize + sanitize handoff]
-  H --> I
-  I --> A
+---
 
-  D --> J[Answer from structured handoff]
-  J --> K{OPENROUTER_API_KEY set?}
-  K -->|Yes| L[LLM short answer]
-  K -->|No| M[Deterministic fallback answer]
-  L --> A
-  M --> A
+## 📂 Project Structure
+
+```
+PRAVAH.ai
+│
+├── landing page/
+│   └── index.html
+├── src/
+│   ├── server.js
+│   └── extractHandoff.js
+├── test/
+│   └── extractHandoff.test.js
+├── .env.example
+└── README.md
 ```
 
-## Environment Variables
+---
 
-Create your own `.env` file in the project root using `.env.example` as template.
+## ⚙️ API Endpoints
 
-Required/optional variables:
-- `OPENROUTER_API_KEY` (optional but recommended): enables LLM extraction and chat responses.
-- `PORT` (optional): server port, defaults to `3000`.
-
-Example:
-
-```bash
-PORT=3000
-OPENROUTER_API_KEY=your_openrouter_api_key_here
+### Health Check
+```
+GET /health
 ```
 
-If `OPENROUTER_API_KEY` is missing, the application still works with rule-based fallback extraction.
-
-## API Endpoints
-
-### `GET /health`
-Returns service health.
-
-Response:
-
-```json
-{ "status": "ok" }
+### Extract Handoff
+```
+POST /handoff/extract
 ```
 
-### `POST /handoff/extract`
-Extracts structured handoff from message list.
-
-Request body:
-
-```json
-{
-  "messages": [
-    "Rahul is working on retry logic for checkout service",
-    "Payment API timeout is blocking deployment",
-    "Fix by tonight"
-  ]
-}
+### Ask Questions on Handoff
+```
+POST /chat
 ```
 
-Success response:
+---
 
-```json
-{
-  "blockers": ["Payment API timeout is blocking deployment"],
-  "tasks": ["Rahul is working on retry logic for checkout service"],
-  "owners": ["Rahul -> retry logic for checkout service"],
-  "deadlines": ["Fix by tonight"],
-  "decisions": [],
-  "dependencies": []
-}
+## 🛠 Local Development
+
+Install dependencies
+
 ```
-
-### `POST /chat`
-Answers a specific question using a previously extracted handoff object.
-
-Request body:
-
-```json
-{
-  "question": "Who owns this task?",
-  "handoff": {
-    "blockers": [],
-    "tasks": ["Implement retry logic"],
-    "owners": ["Rahul -> retry logic"],
-    "deadlines": [],
-    "decisions": [],
-    "dependencies": []
-  }
-}
-```
-
-Response:
-
-```json
-{ "answer": "Rahul -> retry logic" }
-```
-
-## Local Development
-
-### 1) Install dependencies
-
-```bash
 npm install
 ```
 
-Expected runtime dependencies from source:
-- `express`
-- `axios`
-- `dotenv`
+Create environment file
 
-### 2) Configure environment
-
-```bash
+```
 cp .env.example .env
-# edit .env and add your OPENROUTER_API_KEY
 ```
 
-### 3) Start server
+Add key:
 
-```bash
+```
+OPENROUTER_API_KEY=your_key_here
+PORT=3000
+```
+
+Start server
+
+```
 node src/server.js
 ```
 
-Server default URL:
-- `http://localhost:3000`
+Run tests
 
-### 4) Run tests
-
-```bash
+```
 node --test
 ```
 
-## Reliability and Fallback Design
+---
 
-- Extraction always returns a schema-safe object.
-- If OpenRouter fails, parser fails, or key is missing, local fallback logic is used.
-- `/chat` falls back to deterministic, category-based answering when LLM is unavailable.
+## 🛡 Reliability Design
 
-## Security Notes
+PRAVAH.ai always returns **schema-safe JSON**.
 
-- Never commit `.env`.
-- Rotate API keys if exposed.
-- Consider adding rate limiting and request size limits in production.
+If LLM extraction fails or no API key exists, the system automatically switches to **local rule-based extraction**, ensuring reliable handoffs.
 
-## Future Improvements
+---
 
-- Add request validation library (for example `zod` or `joi`) for strict schema validation.
-- Add integration tests for API endpoints.
-- Add Docker support and deployment docs.
-- Add frontend app that consumes `/handoff/extract` and `/chat` endpoints directly.
+## 👥 Contributors
+
+- Lavansh Choubey  
+- Aksh Garg
