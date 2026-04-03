@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Animated wave header -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:003d1f,50:00cc6a,100:00ff88&height=200&section=header&text=PRAVAH.ai&fontSize=72&fontColor=ffffff&fontAlignY=38&desc=AI-powered%20Engineering%20Handoff%20Generator&descAlignY=58&descSize=18&animation=fadeIn" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:003d1f,50:00cc6a,100:00ff88&height=200&section=header&text=pravah.ai&fontSize=72&fontColor=ffffff&fontAlignY=38&desc=AI-powered%20Engineering%20Handoff%20Generator&descAlignY=58&descSize=18&animation=fadeIn" width="100%"/>
 
 <!-- Animated typing banner -->
 <a href="#">
@@ -30,18 +30,18 @@
 
 <div align="center">
 
-## 🌊 What is PRAVAH.ai?
+## 🌊 What is pravah.ai?
 
 </div>
 
-> **PRAVAH** *(Sanskrit: प्रवाह — "flow")* — because critical engineering context should *flow*, not vanish in a Slack thread.
+> **pravah** *(Sanskrit: प्रवाह — "flow")* — because critical engineering context should *flow*, not vanish in a Slack thread.
 
 Engineering teams **bleed time** searching through:
 - 🧵 Endless Slack threads
 - 📋 Unstructured standups  
 - 💬 Long chat discussions with buried decisions
 
-**PRAVAH.ai** plugs directly into those conversations and automatically produces a clean, structured JSON handoff — instantly.
+**pravah.ai** plugs directly into those conversations and automatically produces a clean, structured JSON handoff — instantly.
 
 <div align="center">
 
@@ -74,7 +74,7 @@ If the LLM fails or no API key is present, a deterministic rule-based parser tak
 <td width="50%">
 
 ### 💬 Slack Integration
-PRAVAH connects natively to Slack. Engineering conversations turn into structured handoffs without any manual copy-paste or summarization.
+pravah connects natively to Slack. Engineering conversations turn into structured handoffs without any manual copy-paste or summarization.
 
 </td>
 <td width="50%">
@@ -107,7 +107,7 @@ Extraction logic is covered by unit tests using Node's native `node:test` runner
 > Animated data packets flow across every agent boundary in real-time. Place `architecture.svg` in the same folder as this README.
 
 <div align="center">
-<img src="./architecture.svg" alt="PRAVAH.ai Animated Agent Architecture" width="100%"/>
+<img src="./architecture.svg" alt="pravah.ai Animated Agent Architecture" width="100%"/>
 </div>
 
 <br/>
@@ -117,7 +117,7 @@ Extraction logic is covered by unit tests using Node's native `node:test` runner
 ```
 💬 Raw chat messages
     └─▶ 🚀 Express API receives & routes request
-            └─▶ 🤖 PRAVAH Orchestrator (AI Agent Hub)
+            └─▶ 🤖 pravah Orchestrator (AI Agent Hub)
                     ├─▶ 🧠 LLM Agent       (primary path)  ─▶ ┐
                     └─▶ 🛡️ Rule Parser     (fallback path) ─▶ ┤
                                                                └─▶ 📦 Structuring Engine
@@ -234,7 +234,7 @@ curl -X POST http://localhost:3000/chat \
           (always returned)
 ```
 
-PRAVAH never crashes silently. The fallback parser guarantees output regardless of API availability, key errors, or LLM timeouts.
+pravah never crashes silently. The fallback parser guarantees output regardless of API availability, key errors, or LLM timeouts.
 
 ---
 
@@ -271,7 +271,7 @@ node --test
 ## 📂 Project Structure
 
 ```
-PRAVAH.ai/
+pravah.ai/
 │
 ├── 📁 landing page/
 │   └── index.html
@@ -305,7 +305,7 @@ PRAVAH.ai/
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:00ff88,50:00cc6a,100:003d1f&height=120&section=footer&animation=fadeIn" width="100%"/>
 
-**If PRAVAH saves your team from lost context, leave a ⭐**
+**If pravah saves your team from lost context, leave a ⭐**
 
 *Built with care for engineering teams everywhere.*
 
