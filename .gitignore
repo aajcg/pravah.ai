@@ -8,4 +8,7 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 dist/
-build/
+build/.env
+node_modules/
+.env
+node_modules/
