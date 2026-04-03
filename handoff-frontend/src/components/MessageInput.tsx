@@ -22,6 +22,8 @@ const typingHints = [
   "Decision: keep webhook payload unchanged...",
 ];
 
+const slackEnabled = process.env.NEXT_PUBLIC_ENABLE_SLACK === "true";
+
 export default function MessageInput() {
   const {
     messagesInput,
@@ -144,10 +146,12 @@ export default function MessageInput() {
             )}
           </form>
 
-          <div className="mt-4 pt-4 border-t border-slate-800">
-            <h4 className="text-sm font-medium text-slate-300 mb-2">Or import directly:</h4>
-            <SlackConnect />
-          </div>
+          {slackEnabled && (
+            <div className="mt-4 border-t border-slate-800 pt-4">
+              <h4 className="mb-2 text-sm font-medium text-slate-300">Or import directly:</h4>
+              <SlackConnect />
+            </div>
+          )}
         </CardContent>
       </Card>
     </motion.div>
