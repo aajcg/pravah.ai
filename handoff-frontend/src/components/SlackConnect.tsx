@@ -14,7 +14,7 @@ export function SlackConnect() {
   // We fetch the session manually here since NextAuth beta is sometimes tricky with SessionProvider
   useEffect(() => {
     fetch('/api/auth/session').then(res => res.json()).then(data => {
-      if (Object.keys(data).length > 0) setSession(data);
+      if (data && Object.keys(data).length > 0) setSession(data);
     })
   }, []);
 
