@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { playUiClick } from "@/lib/sound";
 import { useHandoffStore } from "@/store/use-handoff-store";
 
@@ -115,6 +115,14 @@ function FloatingNodes() {
 
 export default function Hero() {
   const soundEnabled = useHandoffStore((state) => state.soundEnabled);
+  const { scrollY } = useScroll();
+  const contentY = useTransform(scrollY, [0, 900], [0, -52]);
+  const contentOpacity = useTransform(scrollY, [0, 960], [1, 0.84]);
+  const orb1Y = useTransform(scrollY, [0, 950], [0, -120]);
+  const orb2Y = useTransform(scrollY, [0, 950], [0, 90]);
+  const orb3Y = useTransform(scrollY, [0, 950], [0, -68]);
+  const panelY = useTransform(scrollY, [0, 900], [0, -86]);
+  const cueY = useTransform(scrollY, [0, 900], [0, 28]);
 
   const onTryDemo = () => {
     playUiClick(soundEnabled);
@@ -161,24 +169,27 @@ export default function Hero() {
     >
       {/* Orbs */}
       <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-        <div style={{
+        <motion.div style={{
           position: "absolute", borderRadius: "50%", filter: "blur(80px)",
-          width: 600, height: 600, right: -100, top: "50%", transform: "translateY(-50%)",
+          width: 600, height: 600, right: -100, top: "calc(50% - 300px)",
           background: "rgba(26,77,110,0.2)",
+          y: orb1Y,
         }} />
-        <div style={{
+        <motion.div style={{
           position: "absolute", borderRadius: "50%", filter: "blur(80px)",
           width: 400, height: 400, left: -80, bottom: -100,
           background: "rgba(42,157,143,0.1)",
+          y: orb2Y,
         }} />
-        <div style={{
+        <motion.div style={{
           position: "absolute", borderRadius: "50%", filter: "blur(80px)",
           width: 300, height: 300, left: "40%", top: "10%",
           background: "rgba(212,164,76,0.06)",
+          y: orb3Y,
         }} />
       </div>
 
-      <div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", width: "100%" }}>
+      <motion.div style={{ position: "relative", zIndex: 2, maxWidth: 1200, margin: "0 auto", width: "100%", y: contentY, opacity: contentOpacity }}>
         {/* Tag */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -253,6 +264,7 @@ export default function Hero() {
 
         {/* Stat bar */}
         <motion.div
+          className="glass-panel"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9 }}
@@ -260,9 +272,6 @@ export default function Hero() {
             display: "flex",
             flexWrap: "wrap",
             marginTop: 60,
-            border: "1px solid var(--border)",
-            background: "rgba(255,255,255,0.02)",
-            backdropFilter: "blur(4px)",
           }}
         >
           {[
@@ -370,35 +379,33 @@ export default function Hero() {
             See How It Works
           </a>
         </motion.div>
-      </div>
+      </motion.div>
 
       {/* Right visual panel */}
       <motion.div
+        className="hero-side-panel glass-panel glass-panel--strong"
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.9, delay: 0.4 }}
         style={{
           position: "absolute",
           right: 64,
-          top: "50%",
-          transform: "translateY(-50%)",
+          top: "calc(50% - 170px)",
           width: "min(420px, 35vw)",
           height: 340,
-          border: "1px solid var(--border)",
-          background: "rgba(255,255,255,0.02)",
-          backdropFilter: "blur(4px)",
           overflow: "hidden",
           zIndex: 2,
+          y: panelY,
         }}
       >
         <FloatingNodes />
         <motion.div
+          className="glass-badge"
           style={{
             position: "absolute", top: 16, left: 16,
             fontFamily: "var(--font-jetbrains-mono), monospace",
             fontSize: 10, letterSpacing: "0.12em",
             textTransform: "uppercase",
-            background: "rgba(7,8,13,0.8)",
             border: "1px solid rgba(212,164,76,0.25)",
             color: "var(--gold)",
             padding: "6px 12px",
@@ -410,12 +417,12 @@ export default function Hero() {
           Incoming Signals
         </motion.div>
         <motion.div
+          className="glass-badge"
           style={{
             position: "absolute", bottom: 16, right: 16,
             fontFamily: "var(--font-jetbrains-mono), monospace",
             fontSize: 10, letterSpacing: "0.12em",
             textTransform: "uppercase",
-            background: "rgba(7,8,13,0.8)",
             border: "1px solid rgba(42,157,143,0.3)",
             color: "var(--teal2)",
             padding: "6px 12px",
@@ -445,6 +452,7 @@ export default function Hero() {
           letterSpacing: "0.18em",
           textTransform: "uppercase",
           color: "var(--paper3)",
+          y: cueY,
         }}
       >
         <div style={{ width: 1, height: 44, background: "var(--border)", position: "relative", overflow: "hidden" }}>
@@ -464,7 +472,7 @@ export default function Hero() {
         }
         @media (max-width: 900px) {
           #hero { padding: 120px 20px 80px !important; }
-          #hero > div:nth-child(3) { display: none !important; }
+          .hero-side-panel { display: none !important; }
         }
       `}</style>
     </section>

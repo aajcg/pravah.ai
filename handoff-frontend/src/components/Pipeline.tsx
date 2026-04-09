@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import { Binary, Volume2, VolumeX } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useHandoffStore } from "@/store/use-handoff-store";
@@ -67,6 +67,10 @@ export default function Pipeline() {
     }))
   );
 
+  const { scrollY } = useScroll();
+  const auraLeftY = useTransform(scrollY, [240, 2200], [0, -170]);
+  const auraRightY = useTransform(scrollY, [240, 2200], [0, 120]);
+
   // Activate rv elements on mount
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -84,9 +88,35 @@ export default function Pipeline() {
         padding: "130px 64px",
         position: "relative",
         zIndex: 1,
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+      <motion.div
+        aria-hidden
+        className="parallax-aura"
+        style={{
+          width: 360,
+          height: 360,
+          left: -140,
+          top: 24,
+          background: "rgba(56,196,180,0.38)",
+          y: auraLeftY,
+        }}
+      />
+      <motion.div
+        aria-hidden
+        className="parallax-aura"
+        style={{
+          width: 420,
+          height: 420,
+          right: -180,
+          top: 340,
+          background: "rgba(212,164,76,0.32)",
+          y: auraRightY,
+        }}
+      />
+
+      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
         {/* Section header */}
         <RevealDiv style={{ marginBottom: 60 }}>
@@ -107,14 +137,11 @@ export default function Pipeline() {
 
         {/* Controls strip */}
         <RevealDiv delay={0.1} style={{ marginBottom: 48 }}>
-          <div style={{
+          <div className="glass-panel" style={{
             display: "inline-flex",
             alignItems: "center",
             gap: 24,
-            border: "1px solid var(--border)",
-            background: "rgba(255,255,255,0.02)",
             padding: "14px 24px",
-            backdropFilter: "blur(4px)",
           }}>
             <label style={{
               display: "flex",
@@ -222,11 +249,8 @@ export default function Pipeline() {
 
         {/* AI Thinking Logs */}
         <RevealDiv delay={0.1}>
-          <div style={{
-            border: "1px solid var(--border)",
-            background: "rgba(255,255,255,0.015)",
+          <div className="glass-panel glass-panel--strong" style={{
             padding: "24px 28px",
-            backdropFilter: "blur(4px)",
           }}>
             <div style={{
               display: "flex",
@@ -241,7 +265,7 @@ export default function Pipeline() {
                 textTransform: "uppercase",
                 color: "var(--gold)",
               }}>
-                // AI Thinking Logs
+                AI Thinking Logs
               </span>
               <span style={{
                 fontFamily: "var(--font-jetbrains-mono), monospace",
@@ -254,7 +278,7 @@ export default function Pipeline() {
                   ? "1px solid rgba(42,157,143,0.3)"
                   : "1px solid var(--border)",
                 color: isExtracting ? "var(--teal2)" : "var(--paper3)",
-                background: isExtracting ? "rgba(42,157,143,0.08)" : "transparent",
+                background: isExtracting ? "rgba(42,157,143,0.08)" : "rgba(7,8,13,0.3)",
               }}>
                 {isExtracting ? "● Live" : "Idle"}
               </span>

@@ -64,10 +64,7 @@ export default function MessageInput() {
       transition={{ type: "spring", stiffness: 200, damping: 18 }}
       style={{ height: "100%" }}
     >
-      <div style={{
-        border: "1px solid var(--border)",
-        background: "rgba(255,255,255,0.015)",
-        backdropFilter: "blur(4px)",
+      <div className="glass-panel glass-panel--strong" style={{
         height: "100%",
         position: "relative",
         overflow: "hidden",
