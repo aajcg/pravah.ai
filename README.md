@@ -116,7 +116,7 @@ Extraction logic is covered by unit tests using Node's native `node:test` runner
 
 ```
 💬 Raw chat messages
-    └─▶ 🚀 Express API receives & routes request
+  └─▶ 🚀 Serverless API receives & routes request
             └─▶ 🤖 Pravah Orchestrator (AI Agent Hub)
                     ├─▶ 🧠 LLM Agent       (primary path)  ─▶ ┐
                     └─▶ 🛡️ Rule Parser     (fallback path) ─▶ ┤
@@ -261,7 +261,15 @@ PORT=3000
 node src/server.js
 ```
 
-**4. Run tests**
+> Local-only Express compatibility server. In production, deploy serverless functions on Vercel.
+
+**4. Deploy serverless endpoints (production)**
+```bash
+npx vercel
+npx vercel --prod
+```
+
+**5. Run tests**
 ```bash
 node --test
 ```
@@ -277,13 +285,20 @@ Pravah.ai/
 │   └── index.html
 │
 ├── 📁 src/
-│   ├── server.js               # Express API server
+│   ├── server.js               # Local dev compatibility server (Express)
 │   └── extractHandoff.js       # LLM + fallback extraction logic
+│
+├── 📁 api/
+│   ├── health.js               # Vercel serverless GET /health
+│   ├── chat.js                 # Vercel serverless POST /chat
+│   ├── handoff/extract.js      # Vercel serverless POST /handoff/extract
+│   └── _lib/http.js            # Shared serverless CORS + JSON helpers
 │
 ├── 📁 test/
 │   └── extractHandoff.test.js  # Unit tests
 │
 ├── architecture.svg            # 🔥 Animated agent architecture diagram
+├── vercel.json                 # Rewrite mapping for clean endpoint URLs
 ├── .env.example
 └── README.md
 ```
