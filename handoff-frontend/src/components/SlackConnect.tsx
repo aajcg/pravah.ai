@@ -1,36 +1,126 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { signIn, signOut } from "next-auth/react";
-import { fetchSlackChannels, fetchSlackMessages } from "@/app/actions";
+import { useEffect, useMemo, useState } from "react";
+import { getProviders, signIn, signOut } from "next-auth/react";
+import { toast } from "sonner";
+import {
+  fetchSlackChannels,
+  fetchSlackMessages,
+  type SlackChannel,
+} from "@/app/actions";
 import { useHandoffStore } from "@/store/use-handoff-store";
 
+interface SessionShape {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  };
+  accessToken?: string;
+}
+
 export function SlackConnect() {
-  const [channels, setChannels] = useState<{ id: string; name: string }[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [session, setSession] = useState<object | null>(null);
+  const [channels, setChannels] = useState<SlackChannel[]>([]);
+  const [loadingChannels, setLoadingChannels] = useState(false);
+  const [importingChannelId, setImportingChannelId] = useState<string | null>(null);
+  const [session, setSession] = useState<SessionShape | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const [slackProviderReady, setSlackProviderReady] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [lastImportSummary, setLastImportSummary] = useState<string | null>(null);
+
+  const setMessagesInput = useHandoffStore((state) => state.setMessagesInput);
+  const runExtraction = useHandoffStore((state) => state.runExtraction);
 
   useEffect(() => {
-    fetch("/api/auth/session")
-      .then((r) => r.json())
-      .then((d) => { if (d && Object.keys(d).length > 0) setSession(d); });
+    let cancelled = false;
+
+    Promise.all([
+      fetch("/api/auth/session").then((r) => r.json()),
+      getProviders(),
+    ])
+      .then(([payload, providers]) => {
+        if (cancelled) {
+          return;
+        }
+
+        if (payload && typeof payload === "object" && "user" in payload) {
+          setSession(payload as SessionShape);
+        } else {
+          setSession(null);
+        }
+
+        const slackProvider = providers?.slack;
+        setSlackProviderReady(Boolean(slackProvider));
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSession(null);
+          setSlackProviderReady(false);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setCheckingSession(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  const filteredChannels = useMemo(() => {
+    const term = searchQuery.trim().toLowerCase();
+    if (!term) {
+      return channels;
+    }
+
+    return channels.filter((channel) => channel.name.toLowerCase().includes(term));
+  }, [channels, searchQuery]);
+
   const loadChannels = async () => {
-    setLoading(true);
+    setLoadingChannels(true);
+    setLastImportSummary(null);
+
     const data = await fetchSlackChannels();
-    if (!("error" in data)) setChannels(data as { id: string; name: string }[]);
-    setLoading(false);
+    if ("error" in data) {
+      setChannels([]);
+      toast.error(data.error);
+      setLoadingChannels(false);
+      return;
+    }
+
+    setChannels(data);
+    if (data.length === 0) {
+      toast.error("No channels available with current Slack access.");
+    }
+
+    setLoadingChannels(false);
   };
 
-  const handleChannel = async (id: string) => {
-    setLoading(true);
-    const text = await fetchSlackMessages(id);
-    if (typeof text === "string") {
-      useHandoffStore.getState().setMessagesInput(text);
-      setChannels([]);
+  const handleChannelImport = async (channelId: string) => {
+    setImportingChannelId(channelId);
+    setLastImportSummary(null);
+
+    const result = await fetchSlackMessages(channelId);
+    if ("error" in result) {
+      toast.error(result.error);
+      setImportingChannelId(null);
+      return;
     }
-    setLoading(false);
+
+    setMessagesInput(result.transcript);
+    setChannels([]);
+    setSearchQuery("");
+
+    const summary = `Imported ${result.importedCount} messages from #${result.channelName}.${
+      result.hasMore ? " Showing latest window only." : ""
+    }`;
+    setLastImportSummary(summary);
+    toast.success(summary);
+
+    await runExtraction();
+    setImportingChannelId(null);
   };
 
   const btnBase: React.CSSProperties = {
@@ -47,10 +137,48 @@ export function SlackConnect() {
     gap: 8,
   };
 
-  if (!session) {
+  if (checkingSession) {
     return (
       <button
-        onClick={() => signIn("slack")}
+        disabled
+        style={{
+          ...btnBase,
+          width: "100%",
+          justifyContent: "center",
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid var(--border)",
+          color: "var(--paper3)",
+          cursor: "default",
+        }}
+      >
+        Checking Slack session...
+      </button>
+    );
+  }
+
+  if (!session) {
+    if (!slackProviderReady) {
+      return (
+        <button
+          disabled
+          style={{
+            ...btnBase,
+            width: "100%",
+            justifyContent: "center",
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid var(--border)",
+            color: "var(--paper3)",
+            cursor: "default",
+          }}
+        >
+          Slack auth not configured (set Slack env vars)
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => signIn("slack", { callbackUrl: "/#pipeline" })}
         style={{
           ...btnBase,
           width: "100%",
@@ -82,25 +210,45 @@ export function SlackConnect() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+      <div
+        style={{
+          fontFamily: "var(--font-jetbrains-mono), monospace",
+          fontSize: 10,
+          letterSpacing: "0.08em",
+          color: "var(--paper3)",
+        }}
+      >
+        Connected as {session.user?.name ?? session.user?.email ?? "Slack user"}
+      </div>
+
       <div style={{ display: "flex", gap: 8 }}>
         <button
           onClick={loadChannels}
-          disabled={loading}
+          disabled={loadingChannels || importingChannelId !== null}
           style={{
             ...btnBase,
             flex: 1,
             justifyContent: "center",
-            background: loading ? "rgba(42,157,143,0.4)" : "var(--teal)",
+            background: loadingChannels ? "rgba(42,157,143,0.4)" : "var(--teal)",
             border: "none",
             color: "white",
           }}
-          onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "var(--teal2)"; }}
-          onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLButtonElement).style.background = "var(--teal)"; }}
+          onMouseEnter={(e) => {
+            if (!loadingChannels) {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--teal2)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!loadingChannels) {
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--teal)";
+            }
+          }}
         >
-          {loading ? "Loading..." : "Import from Slack"}
+          {loadingChannels ? "Loading channels..." : "Import from Slack"}
         </button>
         <button
-          onClick={() => signOut()}
+          onClick={() => signOut({ callbackUrl: "/#pipeline" })}
+          disabled={importingChannelId !== null}
           style={{
             ...btnBase,
             background: "transparent",
@@ -120,56 +268,129 @@ export function SlackConnect() {
         </button>
       </div>
 
-      {channels.length > 0 && (
-        <div style={{
-          maxHeight: 160,
-          overflowY: "auto",
-          border: "1px solid var(--border)",
-          background: "rgba(255,255,255,0.02)",
-          padding: 8,
-        }}>
-          <div style={{
+      {lastImportSummary && (
+        <div
+          style={{
             fontFamily: "var(--font-jetbrains-mono), monospace",
-            fontSize: 9,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--paper3)",
-            marginBottom: 6,
-            padding: "0 4px",
-          }}>
+            fontSize: 10,
+            letterSpacing: "0.06em",
+            color: "var(--gold2)",
+            border: "1px solid rgba(212,164,76,0.25)",
+            background: "rgba(212,164,76,0.06)",
+            padding: "8px 10px",
+          }}
+        >
+          {lastImportSummary}
+        </div>
+      )}
+
+      {channels.length > 0 && (
+        <div
+          style={{
+            maxHeight: 220,
+            overflowY: "auto",
+            border: "1px solid var(--border)",
+            background: "rgba(255,255,255,0.02)",
+            padding: 8,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: 9,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "var(--paper3)",
+              marginBottom: 6,
+              padding: "0 4px",
+            }}
+          >
             Select channel:
           </div>
-          {channels.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => handleChannel(c.id)}
+
+          <input
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Filter channels..."
+            style={{
+              width: "100%",
+              marginBottom: 8,
+              background: "rgba(7,8,13,0.5)",
+              border: "1px solid var(--border)",
+              color: "var(--paper)",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: 11,
+              letterSpacing: "0.04em",
+              padding: "8px 10px",
+              outline: "none",
+            }}
+          />
+
+          {filteredChannels.map((channel) => {
+            const isImportingThisChannel = importingChannelId === channel.id;
+
+            return (
+              <button
+                key={channel.id}
+                onClick={() => handleChannelImport(channel.id)}
+                disabled={importingChannelId !== null}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "8px 10px",
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--paper2)",
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: 12,
+                  letterSpacing: "0.04em",
+                  cursor: importingChannelId !== null ? "not-allowed" : "pointer",
+                  borderRadius: 2,
+                  transition: "background 0.15s, color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  if (importingChannelId === null) {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      "rgba(212,164,76,0.06)";
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--gold)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "transparent";
+                  (e.currentTarget as HTMLButtonElement).style.color = "var(--paper2)";
+                }}
+              >
+                {isImportingThisChannel ? "Importing..." : `# ${channel.name}`}
+                <span
+                  style={{
+                    marginLeft: 8,
+                    fontSize: 10,
+                    color: "var(--paper3)",
+                  }}
+                >
+                  {channel.isPrivate ? "private" : "public"}
+                  {typeof channel.memberCount === "number"
+                    ? ` • ${channel.memberCount} members`
+                    : ""}
+                </span>
+              </button>
+            );
+          })}
+
+          {filteredChannels.length === 0 && (
+            <div
               style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "8px 10px",
-                background: "transparent",
-                border: "none",
-                color: "var(--paper2)",
                 fontFamily: "var(--font-jetbrains-mono), monospace",
-                fontSize: 12,
-                letterSpacing: "0.04em",
-                cursor: "pointer",
-                borderRadius: 2,
-                transition: "background 0.15s, color 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(212,164,76,0.06)";
-                (e.currentTarget as HTMLButtonElement).style.color = "var(--gold)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "transparent";
-                (e.currentTarget as HTMLButtonElement).style.color = "var(--paper2)";
+                fontSize: 10,
+                letterSpacing: "0.06em",
+                color: "var(--paper3)",
+                padding: "8px 10px",
               }}
             >
-              # {c.name}
-            </button>
-          ))}
+              No channels matched this filter.
+            </div>
+          )}
         </div>
       )}
     </div>

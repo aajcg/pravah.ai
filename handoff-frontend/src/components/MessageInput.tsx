@@ -14,6 +14,7 @@ const typingHints = [
 ];
 
 const slackEnabled = process.env.NEXT_PUBLIC_ENABLE_SLACK === "true";
+const showDemoButton = !slackEnabled;
 
 export default function MessageInput() {
   const {
@@ -108,7 +109,9 @@ export default function MessageInput() {
               color: "var(--paper3)",
               lineHeight: 1.6,
             }}>
-              Paste noisy team updates and let the system extract structure.
+              {slackEnabled
+                ? "Import real Slack conversations or paste backup updates."
+                : "Paste noisy team updates and let the system extract structure."}
             </p>
           </div>
 
@@ -117,7 +120,11 @@ export default function MessageInput() {
               <textarea
                 value={messagesInput}
                 onChange={(e) => setMessagesInput(e.target.value)}
-                placeholder="Drop chat snippets, standup notes, or email fragments..."
+                placeholder={
+                  slackEnabled
+                    ? "Import Slack messages below, or paste fallback chat snippets..."
+                    : "Drop chat snippets, standup notes, or email fragments..."
+                }
                 disabled={isExtracting}
                 style={{
                   width: "100%",
@@ -161,39 +168,41 @@ export default function MessageInput() {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-              <button
-                type="button"
-                onClick={fillWithExample}
-                disabled={isExtracting}
-                style={{
-                  fontFamily: "var(--font-syne), sans-serif",
-                  fontWeight: 600,
-                  fontSize: 11,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "var(--paper3)",
-                  padding: "10px 18px",
-                  border: "1px solid var(--border)",
-                  background: "transparent",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  borderRadius: 2,
-                  transition: "color 0.2s, border-color 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--paper)";
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border2)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--paper3)";
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
-                }}
-              >
-                <Wand2 size={12} />
-                Autofill Example
-              </button>
+              {showDemoButton && (
+                <button
+                  type="button"
+                  onClick={fillWithExample}
+                  disabled={isExtracting}
+                  style={{
+                    fontFamily: "var(--font-syne), sans-serif",
+                    fontWeight: 600,
+                    fontSize: 11,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--paper3)",
+                    padding: "10px 18px",
+                    border: "1px solid var(--border)",
+                    background: "transparent",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    borderRadius: 2,
+                    transition: "color 0.2s, border-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--paper)";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border2)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLButtonElement).style.color = "var(--paper3)";
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
+                  }}
+                >
+                  <Wand2 size={12} />
+                  Autofill Example
+                </button>
+              )}
 
               <button
                 type="submit"
