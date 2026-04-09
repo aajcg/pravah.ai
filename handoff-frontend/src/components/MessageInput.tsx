@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Wand2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { useHandoffStore } from "@/store/use-handoff-store";
 import { SlackConnect } from "@/components/SlackConnect";
@@ -13,8 +13,7 @@ const typingHints = [
   "Decision: keep webhook payload unchanged...",
 ];
 
-const slackEnabled = process.env.NEXT_PUBLIC_ENABLE_SLACK === "true";
-const showDemoButton = !slackEnabled;
+const slackFeatureEnabled = process.env.NEXT_PUBLIC_ENABLE_SLACK === "true";
 
 export default function MessageInput() {
   const {
@@ -22,7 +21,6 @@ export default function MessageInput() {
     isExtracting,
     processingLabel,
     setMessagesInput,
-    fillWithExample,
     runExtraction,
   } = useHandoffStore(
     useShallow((state) => ({
@@ -30,7 +28,6 @@ export default function MessageInput() {
       isExtracting: state.isExtracting,
       processingLabel: state.processingLabel,
       setMessagesInput: state.setMessagesInput,
-      fillWithExample: state.fillWithExample,
       runExtraction: state.runExtraction,
     }))
   );
@@ -109,9 +106,7 @@ export default function MessageInput() {
               color: "var(--paper3)",
               lineHeight: 1.6,
             }}>
-              {slackEnabled
-                ? "Import real Slack conversations or paste backup updates."
-                : "Paste noisy team updates and let the system extract structure."}
+              Import real Slack conversations or paste backup updates.
             </p>
           </div>
 
@@ -120,11 +115,7 @@ export default function MessageInput() {
               <textarea
                 value={messagesInput}
                 onChange={(e) => setMessagesInput(e.target.value)}
-                placeholder={
-                  slackEnabled
-                    ? "Import Slack messages below, or paste fallback chat snippets..."
-                    : "Drop chat snippets, standup notes, or email fragments..."
-                }
+                placeholder="Import Slack messages below, or paste fallback chat snippets..."
                 disabled={isExtracting}
                 style={{
                   width: "100%",
@@ -168,42 +159,6 @@ export default function MessageInput() {
             </div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
-              {showDemoButton && (
-                <button
-                  type="button"
-                  onClick={fillWithExample}
-                  disabled={isExtracting}
-                  style={{
-                    fontFamily: "var(--font-syne), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 11,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "var(--paper3)",
-                    padding: "10px 18px",
-                    border: "1px solid var(--border)",
-                    background: "transparent",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    borderRadius: 2,
-                    transition: "color 0.2s, border-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "var(--paper)";
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border2)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "var(--paper3)";
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
-                  }}
-                >
-                  <Wand2 size={12} />
-                  Autofill Example
-                </button>
-              )}
-
               <button
                 type="submit"
                 disabled={isExtracting}
@@ -256,25 +211,38 @@ export default function MessageInput() {
             )}
           </form>
 
-          {slackEnabled && (
+          <div style={{
+            marginTop: 20,
+            paddingTop: 20,
+            borderTop: "1px solid var(--border)",
+          }}>
             <div style={{
-              marginTop: 20,
-              paddingTop: 20,
-              borderTop: "1px solid var(--border)",
+              fontFamily: "var(--font-jetbrains-mono), monospace",
+              fontSize: 10,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              color: "var(--paper3)",
+              marginBottom: 10,
             }}>
-              <div style={{
-                fontFamily: "var(--font-jetbrains-mono), monospace",
-                fontSize: 10,
-                letterSpacing: "0.14em",
-                textTransform: "uppercase",
-                color: "var(--paper3)",
-                marginBottom: 10,
-              }}>
-                Or import directly:
-              </div>
-              <SlackConnect />
+              Import directly from Slack:
             </div>
-          )}
+
+            {!slackFeatureEnabled && (
+              <div
+                style={{
+                  marginBottom: 10,
+                  fontFamily: "var(--font-jetbrains-mono), monospace",
+                  fontSize: 10,
+                  letterSpacing: "0.05em",
+                  color: "var(--gold2)",
+                }}
+              >
+                NEXT_PUBLIC_ENABLE_SLACK is off. Turn it on in .env.local and restart dev server.
+              </div>
+            )}
+
+            <SlackConnect />
+          </div>
         </div>
       </div>
     </motion.div>
