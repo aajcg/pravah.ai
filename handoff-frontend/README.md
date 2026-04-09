@@ -132,3 +132,6 @@ Add these user scopes:
 - `channels:history`
 - `groups:read`
 - `groups:history`
+- `users:read`
+
+After updating scopes, reinstall/re-authorize your Slack app in the workspace and sign in again in the app so a new token is minted.

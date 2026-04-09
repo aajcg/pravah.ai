@@ -44,7 +44,10 @@ channels:read
 channels:history
 groups:read
 groups:history
+users:read
 ```
+
+After changing scopes in Slack app settings, reinstall/re-authorize the app for your workspace and sign in again in Pravah.
 
 ## 3) Verify backend routes (Terminal 2)
 

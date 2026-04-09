@@ -29,10 +29,23 @@ type SlackErrorResult = {
 export type SlackChannelsResult = SlackChannel[] | SlackErrorResult;
 export type SlackMessagesResult = SlackConversationImport | SlackErrorResult;
 
+function getMissingScopeMessage(neededScope: unknown): string {
+  const scopeLabel =
+    typeof neededScope === "string" && neededScope.trim().length > 0
+      ? neededScope
+      : "required Slack scopes";
+
+  return `Slack app is missing scope: ${scopeLabel}. Re-authorize Slack sign-in after updating OAuth scopes.`;
+}
+
 function getSlackErrorMessage(error: unknown): string {
   if (typeof error === "object" && error !== null && "data" in error) {
-    const maybeData = (error as { data?: { error?: unknown } }).data;
+    const maybeData = (error as { data?: { error?: unknown; needed?: unknown } }).data;
     if (maybeData && typeof maybeData.error === "string" && maybeData.error.trim().length > 0) {
+      if (maybeData.error === "missing_scope") {
+        return getMissingScopeMessage(maybeData.needed);
+      }
+
       return maybeData.error;
     }
   }
@@ -102,6 +115,54 @@ async function getSlackClientFromSession(): Promise<WebClient | SlackErrorResult
   return new WebClient(token);
 }
 
+async function listSlackChannels(
+  client: WebClient,
+  types: "public_channel" | "public_channel,private_channel"
+): Promise<SlackChannelsResult> {
+  const channels: SlackChannel[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const response = await client.conversations.list({
+      types,
+      exclude_archived: true,
+      limit: CHANNEL_LIST_LIMIT,
+      cursor,
+    });
+
+    if (!response.ok) {
+      if (response.error === "missing_scope") {
+        const neededScope = (response as { needed?: unknown }).needed;
+        return { error: getMissingScopeMessage(neededScope) };
+      }
+
+      return { error: response.error ?? "Unable to fetch channels from Slack." };
+    }
+
+    for (const channel of response.channels ?? []) {
+      if (!channel.id || !channel.name || channel.is_archived) {
+        continue;
+      }
+
+      channels.push({
+        id: channel.id,
+        name: channel.name,
+        isPrivate: Boolean(channel.is_private),
+        memberCount: typeof channel.num_members === "number" ? channel.num_members : null,
+      });
+    }
+
+    const nextCursor = response.response_metadata?.next_cursor;
+    cursor =
+      typeof nextCursor === "string" && nextCursor.trim().length > 0
+        ? nextCursor
+        : undefined;
+  } while (cursor && channels.length < 500);
+
+  channels.sort((a, b) => a.name.localeCompare(b.name));
+  return channels;
+}
+
 export async function fetchSlackChannels(): Promise<SlackChannelsResult> {
   const clientOrError = await getSlackClientFromSession();
   if ("error" in clientOrError) {
@@ -109,43 +170,22 @@ export async function fetchSlackChannels(): Promise<SlackChannelsResult> {
   }
 
   try {
-    const channels: SlackChannel[] = [];
-    let cursor: string | undefined;
+    const channelResult = await listSlackChannels(clientOrError, "public_channel,private_channel");
+    if (!("error" in channelResult)) {
+      return channelResult;
+    }
 
-    do {
-      const response = await clientOrError.conversations.list({
-        types: "public_channel,private_channel",
-        exclude_archived: true,
-        limit: CHANNEL_LIST_LIMIT,
-        cursor,
-      });
+    // If private-channel scopes are missing, fall back to public channels
+    // so import remains functional for common workspace setups.
+    const missingPrivateScope =
+      channelResult.error.includes("groups:read") ||
+      channelResult.error.includes("groups:history");
 
-      if (!response.ok) {
-        return { error: response.error ?? "Unable to fetch channels from Slack." };
-      }
+    if (!missingPrivateScope) {
+      return channelResult;
+    }
 
-      for (const channel of response.channels ?? []) {
-        if (!channel.id || !channel.name || channel.is_archived) {
-          continue;
-        }
-
-        channels.push({
-          id: channel.id,
-          name: channel.name,
-          isPrivate: Boolean(channel.is_private),
-          memberCount: typeof channel.num_members === "number" ? channel.num_members : null,
-        });
-      }
-
-      const nextCursor = response.response_metadata?.next_cursor;
-      cursor =
-        typeof nextCursor === "string" && nextCursor.trim().length > 0
-          ? nextCursor
-          : undefined;
-    } while (cursor && channels.length < 500);
-
-    channels.sort((a, b) => a.name.localeCompare(b.name));
-    return channels;
+    return await listSlackChannels(clientOrError, "public_channel");
   } catch (error) {
     return { error: getSlackErrorMessage(error) };
   }
@@ -175,10 +215,20 @@ export async function fetchSlackMessages(channelId: string): Promise<SlackMessag
     ]);
 
     if (!historyResponse.ok) {
+      if (historyResponse.error === "missing_scope") {
+        const neededScope = (historyResponse as { needed?: unknown }).needed;
+        return { error: getMissingScopeMessage(neededScope) };
+      }
+
       return { error: historyResponse.error ?? "Unable to read channel history." };
     }
 
     if (!channelInfoResponse.ok) {
+      if (channelInfoResponse.error === "missing_scope") {
+        const neededScope = (channelInfoResponse as { needed?: unknown }).needed;
+        return { error: getMissingScopeMessage(neededScope) };
+      }
+
       return { error: channelInfoResponse.error ?? "Unable to resolve channel metadata." };
     }
 

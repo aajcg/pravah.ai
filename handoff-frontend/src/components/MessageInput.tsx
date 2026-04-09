@@ -13,8 +13,6 @@ const typingHints = [
   "Decision: keep webhook payload unchanged...",
 ];
 
-const slackFeatureEnabled = process.env.NEXT_PUBLIC_ENABLE_SLACK === "true";
-
 export default function MessageInput() {
   const {
     messagesInput,
@@ -226,20 +224,6 @@ export default function MessageInput() {
             }}>
               Import directly from Slack:
             </div>
-
-            {!slackFeatureEnabled && (
-              <div
-                style={{
-                  marginBottom: 10,
-                  fontFamily: "var(--font-jetbrains-mono), monospace",
-                  fontSize: 10,
-                  letterSpacing: "0.05em",
-                  color: "var(--gold2)",
-                }}
-              >
-                NEXT_PUBLIC_ENABLE_SLACK is off. Turn it on in .env.local and restart dev server.
-              </div>
-            )}
 
             <SlackConnect />
           </div>
